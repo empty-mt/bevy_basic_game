@@ -1,3 +1,6 @@
+use std::os::windows;
+
+use bevy::audio::Volume;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::Rng;
@@ -6,7 +9,8 @@ pub const PLAYER_SIZE: f32 = 64.0;      // player sprite size
 pub const PLAYER_SPEED: f32 = 500.0;
 pub const ENEMY_SIZE: f32 = 64.0;      // nmy sprite size
 pub const ENEMY_SPEED: f32 = 100.0;
-pub const NUM_ENEMIES: i8 = 4;
+pub const NUM_ENEMIES: i8 = 12;
+pub const GLOBAL_VOLUME: f32 = 0.1;
 
 #[derive(Component)]
 pub struct Player {}
@@ -22,6 +26,8 @@ fn main() {
     app
     .add_plugins(DefaultPlugins)
     .add_plugins(CustomPlugin)
+    // global volume
+    .insert_resource(GlobalVolume::new(Volume::Decibels(GLOBAL_VOLUME)))
     
     .run();
 }
@@ -34,6 +40,8 @@ impl Plugin for CustomPlugin {
         .add_systems(Startup, spawn_player)
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, spawn_enemies)
+        .add_systems(Startup, max_window)
+        .add_systems(Startup, change_global_volume)
         
         // .add_systems(Update, spawn_enemies)
         .add_systems(Update, confine_player_movement)
@@ -41,6 +49,17 @@ impl Plugin for CustomPlugin {
         .add_systems(Update, enemy_movement)
         .add_systems(Update, update_enemy_movement);
     }
+}
+
+pub fn max_window(windows: Query<&mut Window>) {
+    for mut window in windows {
+        window.set_maximized(true);
+    }
+
+}
+
+fn change_global_volume(mut volume: ResMut<GlobalVolume>) {
+    volume.volume = Volume::Linear(GLOBAL_VOLUME);
 }
 
 pub fn spawn_player(
@@ -77,7 +96,7 @@ pub fn spawn_enemies(
             // let x = (window.width() - (random::<f32>() * window.width()))/4.;
             let y = rand::rng().random_range(-1.0..1.0) * window.height()/2.;
             let x = rand::rng().random_range(-1.0..1.0) * window.width()/2.;
-            let vec = Vec3::new(x, y, 0.0);
+            let _vec = Vec3::new(x, y, 0.0);
             // println!("{} {} == {:?}",x,y,vec);
             // todo!();
             commands.spawn((
@@ -122,12 +141,16 @@ pub fn enemy_movement(
 }
 
 pub fn update_enemy_movement(
-    mut enemy_query: Query<(& Transform, &mut Enemy), With<Enemy>>,
+    mut enemy_query: Query<(&Transform, &mut Enemy), With<Enemy>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
+    // Single instead of Query 
+    // mut music_controller: Single<&mut AudioSink>,
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
 
 ) {
     let window = window_query.single().unwrap();
-    // still wondering why "size/8" is necessary -> sprite issue?
+    // why "size/8" is necessary -> sprite issue?
     let eighth_size = ENEMY_SIZE / 8.0;
     let x_min = (window.width()/-2.0) + eighth_size;
     let x_max = (window.width()/2.0) - eighth_size;
@@ -137,15 +160,33 @@ pub fn update_enemy_movement(
     for (transform, mut enemy) in enemy_query.iter_mut() {
         // get actual position as vec3
         let translation = transform.translation;
+        // indicator for audio
+        let mut dir_changed: bool = false; 
 
         // flip direction if hitting edges
-        if translation.x < x_min || translation.x > x_max { enemy.direction.x *= -1.; }
-        if translation.y < y_min || translation.y > y_max { enemy.direction.y *= -1.; }
+        if translation.x < x_min || translation.x > x_max { 
+            dir_changed = true;
+            enemy.direction.x *= -1.; 
+        }
+        if translation.y < y_min || translation.y > y_max { 
+            dir_changed = true;
+            enemy.direction.y *= -1.; 
+        }
 
+        // play audio 
+        if dir_changed { 
+            let sound = asset_server.load("audio/pluck_001.ogg");
+            // let mut player = AudioPlayer::new(sound);
+            commands.spawn(AudioPlayer::<AudioSource>(sound));
+            // reduce sound 
+            // commands.spawn((player, music_controller.set_volume(Volume::Decibels(-0.5))));
+            // music_controller.set_volume(Volume::Decibels(-0.5));
+        }
     }
 
 
 }
+
 pub fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<&mut Transform, With<Player>>,
