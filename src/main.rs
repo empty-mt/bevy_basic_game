@@ -12,7 +12,31 @@ pub const ENEMY_SIZE: f32 = 64.0;       // nmy sprite size
 pub const ENEMY_SPEED: f32 = 100.0;
 pub const NUM_ENEMIES: i16 = 16;
 pub const GLOBAL_VOLUME: f32 = 0.1;     // [0.0 - 1.0]
+pub const ENEMY_DESPAWN_TIME: f32 = 1.0;
 
+#[derive(Resource)]
+pub struct EnemyTimer {
+    pub timer: Timer,
+}
+
+impl Default for EnemyTimer {
+    fn default() -> EnemyTimer {
+        EnemyTimer {
+            timer: Timer::from_seconds(ENEMY_DESPAWN_TIME, TimerMode::Repeating)
+        }
+    }
+}
+
+#[derive(Resource)]
+pub struct Score {
+    pub value: i32,
+}
+
+impl Default for Score {
+    fn default() -> Self {
+        Score { value: 0, }
+    }
+}
 #[derive(Component)]
 pub struct Player {}
 
@@ -29,6 +53,8 @@ fn main() {
     .add_plugins(CustomPlugin)
     // global volume
     .insert_resource(GlobalVolume::new(Volume::Decibels(GLOBAL_VOLUME)))
+    .init_resource::<Score>() 
+    .init_resource::<EnemyTimer>() 
     
     .run();
 }
@@ -41,10 +67,14 @@ impl Plugin for CustomPlugin {
         .add_systems(Startup, spawn_player)
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, max_window)
-        .add_systems(Startup, spawn_enemies)
+        // .add_systems(Startup, spawn_enemies)
         .add_systems(Startup, change_global_volume)
-
         // .add_systems(Update, spawn_enemies)
+        
+        // .add_systems(Update, despawn_enemies_over_time)
+        .add_systems(Update, tick_despawn_enemy_timer)
+        .add_systems(Update, spawn_enemies_over_time)
+        .add_systems(Update, update_score)
         .add_systems(Update, confine_player_movement)
         .add_systems(Update, player_movement)
         .add_systems(Update, enemy_movement)
@@ -244,6 +274,7 @@ pub fn enemy_hit_player(
     // mut enemy_query: Query<&Transform, With<Enemy>>,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     asset_server: Res<AssetServer>,
+    mut score: ResMut<Score>,
 ) {
     if let Ok((player_entity, player_transform)) = player_query.single_mut() {
         // for enemy_transform in enemy_query.iter() {
@@ -260,7 +291,61 @@ pub fn enemy_hit_player(
                 commands.spawn(AudioPlayer::<AudioSource>(sound));
                 // commands.entity(player_entity).despawn();
                 commands.entity(enemy_entity).despawn();
+                score.value +=1;
             }
         }
+    }
+}
+
+pub fn update_score(score: Res<Score>) {
+    if score.is_changed() {
+        println!("{:?}", score.value);
+    }
+}
+
+// tick every time.delta()
+pub fn tick_despawn_enemy_timer(mut enemy_timer: ResMut<EnemyTimer>, time: Res<Time>) {
+    enemy_timer.timer.tick(time.delta());
+}
+
+pub fn despawn_enemies_over_time(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    asset_server: Res<AssetServer>,
+    despawn_timer: Res<EnemyTimer>,
+    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+) {
+    let mut enemy_entities = enemy_query.iter_mut();
+    if let Some(enemy_entity) = enemy_entities.next() {
+        if despawn_timer.timer.finished() {
+            commands.entity(enemy_entity.0).despawn();
+        }
+    }
+}
+
+pub fn spawn_enemies_over_time(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    asset_server: Res<AssetServer>,
+    despawn_timer: Res<EnemyTimer>,
+) {
+    if despawn_timer.timer.finished() {
+            let window = window_query.single().unwrap();
+            let y = rand::rng().random_range(-1.0..1.0) * window.height() / 2.;
+            let x = rand::rng().random_range(-1.0..1.0) * window.width() / 2.;
+
+            commands.spawn((
+                Sprite::from_image(asset_server.load("sprites/tile_0005.png")),
+                Transform::from_xyz(x, y, 0.0),
+                // Transform::from_translation(vec),
+                Enemy {
+                    direction: Vec3::new(
+                        (rand::rng().random_range(0..2) * 2 - 1) as f32,
+                        (rand::rng().random_range(0..2) * 2 - 1) as f32,
+                        0.
+                    ).normalize_or_zero(),
+                },
+            )
+        );
     }
 }
