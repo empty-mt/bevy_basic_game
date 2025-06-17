@@ -1,4 +1,5 @@
-use std::os::windows;
+// using 0.10 guide
+// https://www.youtube.com/watch?v=TQt-v_bFdao&list=PLVnntJRoP85JHGX7rGDu6LaF3fmDDbqyd&index=2
 
 use bevy::audio::Volume;
 use bevy::prelude::*;
@@ -7,10 +8,10 @@ use rand::Rng;
 
 pub const PLAYER_SIZE: f32 = 64.0;      // player sprite size
 pub const PLAYER_SPEED: f32 = 500.0;
-pub const ENEMY_SIZE: f32 = 64.0;      // nmy sprite size
+pub const ENEMY_SIZE: f32 = 64.0;       // nmy sprite size
 pub const ENEMY_SPEED: f32 = 100.0;
-pub const NUM_ENEMIES: i8 = 12;
-pub const GLOBAL_VOLUME: f32 = 0.1;
+pub const NUM_ENEMIES: i16 = 16;
+pub const GLOBAL_VOLUME: f32 = 0.1;     // [0.0 - 1.0]
 
 #[derive(Component)]
 pub struct Player {}
@@ -39,14 +40,15 @@ impl Plugin for CustomPlugin {
         app    
         .add_systems(Startup, spawn_player)
         .add_systems(Startup, spawn_camera)
-        .add_systems(Startup, spawn_enemies)
         .add_systems(Startup, max_window)
+        .add_systems(Startup, spawn_enemies)
         .add_systems(Startup, change_global_volume)
-        
+
         // .add_systems(Update, spawn_enemies)
         .add_systems(Update, confine_player_movement)
         .add_systems(Update, player_movement)
         .add_systems(Update, enemy_movement)
+        .add_systems(Update, enemy_hit_player)
         .add_systems(Update, update_enemy_movement);
     }
 }
@@ -55,7 +57,6 @@ pub fn max_window(windows: Query<&mut Window>) {
     for mut window in windows {
         window.set_maximized(true);
     }
-
 }
 
 fn change_global_volume(mut volume: ResMut<GlobalVolume>) {
@@ -92,13 +93,13 @@ pub fn spawn_enemies(
 
     // if keyboard_input.just_pressed(KeyCode::KeyK) {
         for _ in 0..NUM_ENEMIES {
-            // let y = (window.height() - (random::<f32>() * window.height()))/4.;
-            // let x = (window.width() - (random::<f32>() * window.width()))/4.;
-            let y = rand::rng().random_range(-1.0..1.0) * window.height()/2.;
-            let x = rand::rng().random_range(-1.0..1.0) * window.width()/2.;
-            let _vec = Vec3::new(x, y, 0.0);
-            // println!("{} {} == {:?}",x,y,vec);
-            // todo!();
+            let y = rand::rng().random_range(-1.0..1.0) * window.height() / 2.;
+            let x = rand::rng().random_range(-1.0..1.0) * window.width() / 2.;
+            // !! max_window does not upscale window.size()
+            //
+            // let vec = Vec3::new(x, y, 0.0);
+            // println!("{} {} == {:?} || {:?}",x,y,vec, window.size());
+
             commands.spawn((
                 Sprite::from_image(asset_server.load("sprites/tile_0005.png")),
                 // Sprite {
@@ -110,8 +111,10 @@ pub fn spawn_enemies(
                 // Transform::from_translation(vec),
                 Enemy {
                     direction: Vec3::new(
-                        rand::rng().random_range(-1..1) as f32,
-                        rand::rng().random_range(-1..1) as f32,
+                        // rand::rng().random_range(-1..1) as f32,
+                        // rand::rng().random_range(-1..1) as f32,
+                        (rand::rng().random_range(0..2) * 2 - 1) as f32,
+                        (rand::rng().random_range(0..2) * 2 - 1) as f32,
                         0.
                     ).normalize_or_zero(),
                 },
@@ -140,6 +143,7 @@ pub fn enemy_movement(
     }
 }
 
+// enemy hits wall
 pub fn update_enemy_movement(
     mut enemy_query: Query<(&Transform, &mut Enemy), With<Enemy>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -214,9 +218,9 @@ pub fn confine_player_movement(
     mut player_query: Query<&mut Transform, With<Player>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
-        if let Ok(mut player_transform) = player_query.single_mut() {
+    if let Ok(mut player_transform) = player_query.single_mut() {
         let window = window_query.single().unwrap();
-        // still wondering why "size/8" is necessary -> sprite issue?
+        // why "size/8" is necessary -> sprite issue?
         let eighth_size = PLAYER_SIZE / 8.0;
         let x_min = (window.width()/-2.0) + eighth_size;
         let x_max = (window.width()/2.0) - eighth_size;
@@ -229,7 +233,34 @@ pub fn confine_player_movement(
         translation.y = translation.y.clamp(y_min, y_max);
         // set new position
         player_transform.translation = translation;
-
-        }
+    }
     
+}
+
+// check if pixel of player and nmy are overlapping
+pub fn enemy_hit_player(
+    mut commands: Commands,
+    mut player_query: Query<(Entity, &Transform), With<Player>>,
+    // mut enemy_query: Query<&Transform, With<Enemy>>,
+    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    asset_server: Res<AssetServer>,
+) {
+    if let Ok((player_entity, player_transform)) = player_query.single_mut() {
+        // for enemy_transform in enemy_query.iter() {
+        for (enemy_entity, enemy_transform) in enemy_query.iter_mut() {
+
+            let dist = player_transform.translation.distance(enemy_transform.translation);
+            let player_radius = PLAYER_SIZE / 8.;
+            let enemy_radius = ENEMY_SIZE / 8.;
+
+            // despawn enemy
+            if dist < player_radius + enemy_radius {
+                let sound = asset_server.load("audio/pluck_002.ogg");
+                
+                commands.spawn(AudioPlayer::<AudioSource>(sound));
+                // commands.entity(player_entity).despawn();
+                commands.entity(enemy_entity).despawn();
+            }
+        }
+    }
 }
