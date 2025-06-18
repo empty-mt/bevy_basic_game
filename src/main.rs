@@ -12,9 +12,6 @@ mod events;
 use bevy::prelude::*;
 use global_plugins::*;
 
-use game::player::PlayerPlugin;
-use game::enemy::EnemyPlugin;
-use game::score::ScorePlugin;
 use game::GamePlugin;
 use main_menu::MainMenuPlugin;
 
@@ -30,15 +27,22 @@ pub struct CustomPlugin;
 
 impl Plugin for CustomPlugin {
     fn build(&self, app: &mut App) {
-        app    
+        app
+        .add_plugins(DefaultPlugins)
+        .insert_state(AppState::default())
+        // .insert_state::<AppState>()
         .add_plugins((
-            DefaultPlugins,
             MainMenuPlugin,
             GamePlugin,
             GlobalPlugin,
-            PlayerPlugin,
-            EnemyPlugin,
-            ScorePlugin,
         ));
     }
+}
+
+#[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum AppState {
+    #[default]
+    MainMenu,
+    Game,
+    GameOver,
 }

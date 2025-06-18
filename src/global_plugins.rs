@@ -13,6 +13,7 @@ impl Plugin for GlobalPlugin {
         .add_systems(Startup, max_window)
         .add_systems(Startup, change_global_volume)
         
+        .add_systems(Update, (transition_to_game_state, transition_to_main_menu_state))
         .add_systems(Update, exit_game);
     }
 }

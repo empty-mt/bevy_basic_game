@@ -4,6 +4,7 @@ use bevy::audio::Volume;
 use bevy::window::PrimaryWindow;
 
 use crate::events::*;
+use crate::AppState;
 
 pub const GLOBAL_VOLUME: f32 = 0.1;     // [0.0 - 1.0]
 
@@ -42,4 +43,34 @@ pub fn handle_game_over(
     for event in game_over_event_r.read() {
         println!("reached goal of {:?} kills.", event.score.to_string());
     }
+}
+
+pub fn transition_to_game_state(
+    // mut commands: Commands,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    app_state: Res<State<AppState>>,
+    mut next_state: ResMut<NextState<AppState>>
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyT) {
+        if *app_state.get() != AppState::Game {
+            next_state.set(AppState::Game);
+            println!("appstate: game");
+        }
+    }
+
+}
+
+pub fn transition_to_main_menu_state(
+    // mut commands: Commands,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    app_state: Res<State<AppState>>,
+    mut next_state: ResMut<NextState<AppState>>
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyT) {
+        if *app_state.get() != AppState::MainMenu {
+            next_state.set(AppState::MainMenu);
+            println!("appstate: main menu");
+        }
+    }
+
 }
