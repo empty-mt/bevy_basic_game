@@ -12,7 +12,7 @@ pub const ENEMY_SIZE: f32 = 64.0;       // nmy sprite size
 pub const ENEMY_SPEED: f32 = 100.0;
 pub const NUM_ENEMIES: i16 = 16;
 pub const GLOBAL_VOLUME: f32 = 0.1;     // [0.0 - 1.0]
-pub const ENEMY_DESPAWN_TIME: f32 = 1.0;
+pub const ENEMY_SPAWN_TIME: f32 = 1.0;
 
 #[derive(Resource)]
 pub struct EnemyTimer {
@@ -22,7 +22,7 @@ pub struct EnemyTimer {
 impl Default for EnemyTimer {
     fn default() -> EnemyTimer {
         EnemyTimer {
-            timer: Timer::from_seconds(ENEMY_DESPAWN_TIME, TimerMode::Repeating)
+            timer: Timer::from_seconds(ENEMY_SPAWN_TIME, TimerMode::Repeating)
         }
     }
 }
@@ -77,9 +77,10 @@ impl Plugin for CustomPlugin {
         .add_systems(Update, update_score)
         .add_systems(Update, confine_player_movement)
         .add_systems(Update, player_movement)
-        .add_systems(Update, enemy_movement)
-        .add_systems(Update, enemy_hit_player)
-        .add_systems(Update, update_enemy_movement);
+        .add_systems(Update, (enemy_movement, update_enemy_movement, confine_enemy_movement).chain())
+        .add_systems(Update, enemy_hit_player);
+        // .add_systems(Update, update_enemy_movement)
+        // .add_systems(Update, confine_enemy_movement);
     }
 }
 
@@ -258,13 +259,39 @@ pub fn confine_player_movement(
         let y_max = (window.height()/2.0) - eighth_size;
         let mut translation = player_transform.translation;
 
-        // contraint for player x and y pos
+        // constraint for player x and y pos
         translation.x = translation.x.clamp(x_min, x_max);
         translation.y = translation.y.clamp(y_min, y_max);
         // set new position
         player_transform.translation = translation;
     }
     
+}
+// constraints for enemy moving out of window
+pub fn confine_enemy_movement(
+    mut enemy_query: Query<&mut Transform, With<Enemy>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    let window = match window_query.single() {
+        Ok(a) => a,
+        Err(e) => {return;}
+    }; 
+    // why "size/8" is necessary -> sprite issue?
+    let eighth_size = ENEMY_SIZE / 8.0;
+    let x_min = (window.width()/-2.0) + eighth_size;
+    let x_max = (window.width()/2.0) - eighth_size;
+    let y_min = (window.height()/-2.0) + eighth_size;
+    let y_max = (window.height()/2.0) - eighth_size;
+
+    for mut transform in enemy_query.iter_mut() {
+        let mut translation = transform.translation;
+        // constraint for enemy x and y pos
+        translation.x = translation.x.clamp(x_min, x_max);
+        translation.y = translation.y.clamp(y_min, y_max);
+        // set new position
+        transform.translation = translation;
+    }  
+
 }
 
 // check if pixel of player and nmy are overlapping
@@ -276,7 +303,7 @@ pub fn enemy_hit_player(
     asset_server: Res<AssetServer>,
     mut score: ResMut<Score>,
 ) {
-    if let Ok((player_entity, player_transform)) = player_query.single_mut() {
+    if let Ok((_player_entity, player_transform)) = player_query.single_mut() {
         // for enemy_transform in enemy_query.iter() {
         for (enemy_entity, enemy_transform) in enemy_query.iter_mut() {
 
@@ -310,12 +337,10 @@ pub fn tick_despawn_enemy_timer(mut enemy_timer: ResMut<EnemyTimer>, time: Res<T
 
 pub fn despawn_enemies_over_time(
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    asset_server: Res<AssetServer>,
     despawn_timer: Res<EnemyTimer>,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
 ) {
-    let mut enemy_entities = enemy_query.iter_mut();
+    let mut enemy_entities: bevy::ecs::query::QueryIter<'_, '_, (Entity, &Transform), With<Enemy>> = enemy_query.iter_mut();
     if let Some(enemy_entity) = enemy_entities.next() {
         if despawn_timer.timer.finished() {
             commands.entity(enemy_entity.0).despawn();
@@ -327,9 +352,9 @@ pub fn spawn_enemies_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
-    despawn_timer: Res<EnemyTimer>,
+    spawn_timer: Res<EnemyTimer>,
 ) {
-    if despawn_timer.timer.finished() {
+    if spawn_timer.timer.finished() {
             let window = window_query.single().unwrap();
             let y = rand::rng().random_range(-1.0..1.0) * window.height() / 2.;
             let x = rand::rng().random_range(-1.0..1.0) * window.width() / 2.;
