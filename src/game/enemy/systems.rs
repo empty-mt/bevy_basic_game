@@ -1,5 +1,5 @@
-use crate::enemy::resources::*;
-use crate::enemy::components::*;
+use crate::game::enemy::resources::*;
+use crate::game::enemy::components::*;
 // or:
 // use super::components::*; 
 

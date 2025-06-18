@@ -1,15 +1,15 @@
-use crate::player::components::*;
-// use crate::player::resources::*;
-use crate::score::resources::*;
-use crate::enemy::components::*;
+// use crate::game::player::resources::*;
+use crate::game::player::components::*;
+use crate::game::score::resources::*;
+use crate::game::enemy::components::*;
+// use crate::events::*;
 use crate::events::*;
-use crate::enemy::{ENEMY_SIZE};
+use crate::game::enemy::{ENEMY_SIZE};
 
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 use super::*;
-
 
 pub fn spawn_player(
     mut commands: Commands,
@@ -99,7 +99,6 @@ pub fn enemy_hit_player(
                 let sound = asset_server.load("audio/pluck_002.ogg");
                 
                 commands.spawn(AudioPlayer::<AudioSource>(sound));
-                // commands.entity(player_entity).despawn();
                 commands.entity(enemy_entity).despawn();
                 score.value +=1;
             }
