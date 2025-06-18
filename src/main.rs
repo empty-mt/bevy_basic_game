@@ -1,6 +1,7 @@
 // using 0.10 guide
 // https://www.youtube.com/watch?v=TQt-v_bFdao&list=PLVnntJRoP85JHGX7rGDu6LaF3fmDDbqyd&index=2
 
+use bevy::app::AppExit;
 use bevy::audio::Volume;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
@@ -13,6 +14,7 @@ pub const ENEMY_SPEED: f32 = 100.0;
 pub const NUM_ENEMIES: i16 = 16;
 pub const GLOBAL_VOLUME: f32 = 0.1;     // [0.0 - 1.0]
 pub const ENEMY_SPAWN_TIME: f32 = 1.0;
+pub const SCORE_MAX: i32 = 10;
 
 #[derive(Resource)]
 pub struct EnemyTimer {
@@ -45,6 +47,11 @@ pub struct Enemy {
     pub direction: Vec3,
 }
 
+#[derive(Event)]
+pub struct GameOver {
+    pub score: u32,
+}
+
 fn main() {
     let mut app = App::new();
     
@@ -55,6 +62,7 @@ fn main() {
     .insert_resource(GlobalVolume::new(Volume::Decibels(GLOBAL_VOLUME)))
     .init_resource::<Score>() 
     .init_resource::<EnemyTimer>() 
+    .add_event::<GameOver>()
     
     .run();
 }
@@ -72,9 +80,11 @@ impl Plugin for CustomPlugin {
         // .add_systems(Update, spawn_enemies)
         
         // .add_systems(Update, despawn_enemies_over_time)
+        .add_systems(Update, handle_game_over)
+        .add_systems(Update, exit_game)
         .add_systems(Update, tick_despawn_enemy_timer)
         .add_systems(Update, spawn_enemies_over_time)
-        .add_systems(Update, update_score)
+        .add_systems(Update, print_score)
         .add_systems(Update, confine_player_movement)
         .add_systems(Update, player_movement)
         .add_systems(Update, (enemy_movement, update_enemy_movement, confine_enemy_movement).chain())
@@ -242,9 +252,17 @@ pub fn player_movement(
     }
 }
 
+// close app
+pub fn exit_game(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut app_exit_event_w: EventWriter<AppExit>,
+) {
+    if keyboard_input.pressed(KeyCode::Escape) {
+        app_exit_event_w.write(AppExit::Success);
+    }
+}
+
 // constraints for moving player out of window
-//
-// if enemy movement is buggy in future then mb need: confine_enemy_movement()
 pub fn confine_player_movement(
     mut player_query: Query<&mut Transform, With<Player>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -274,7 +292,7 @@ pub fn confine_enemy_movement(
 ) {
     let window = match window_query.single() {
         Ok(a) => a,
-        Err(e) => {return;}
+        Err(_) => {return;}
     }; 
     // why "size/8" is necessary -> sprite issue?
     let eighth_size = ENEMY_SIZE / 8.0;
@@ -297,13 +315,15 @@ pub fn confine_enemy_movement(
 // check if pixel of player and nmy are overlapping
 pub fn enemy_hit_player(
     mut commands: Commands,
+    mut app_exit_event_w: EventWriter<AppExit>,
+    mut game_over_event_w: EventWriter<GameOver>,
     mut player_query: Query<(Entity, &Transform), With<Player>>,
     // mut enemy_query: Query<&Transform, With<Enemy>>,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     asset_server: Res<AssetServer>,
     mut score: ResMut<Score>,
 ) {
-    if let Ok((_player_entity, player_transform)) = player_query.single_mut() {
+    if let Ok((player_entity, player_transform)) = player_query.single_mut() {
         // for enemy_transform in enemy_query.iter() {
         for (enemy_entity, enemy_transform) in enemy_query.iter_mut() {
 
@@ -320,13 +340,28 @@ pub fn enemy_hit_player(
                 commands.entity(enemy_entity).despawn();
                 score.value +=1;
             }
+
+            // win condition
+            if score.value == SCORE_MAX {
+                game_over_event_w.write(GameOver { score: score.value as u32 });
+                commands.entity(player_entity).despawn();
+                app_exit_event_w.write(AppExit::Success);
+            }
         }
     }
 }
 
-pub fn update_score(score: Res<Score>) {
+pub fn print_score(score: Res<Score>) {
     if score.is_changed() {
         println!("{:?}", score.value);
+    }
+}
+
+pub fn handle_game_over(
+    mut game_over_event_r: EventReader<GameOver>,
+) {
+    for event in game_over_event_r.read() {
+        println!("reached goal of {:?} kills.", event.score.to_string());
     }
 }
 
