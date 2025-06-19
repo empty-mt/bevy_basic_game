@@ -143,6 +143,16 @@ pub fn despawn_enemies_over_time(
     }
 }
 
+pub fn despawn_enemies(
+    mut commands: Commands,
+    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+) {
+    let mut enemy_entities: bevy::ecs::query::QueryIter<'_, '_, (Entity, &Transform), With<Enemy>> = enemy_query.iter_mut();
+    if let Some(enemy_entity) = enemy_entities.next() {
+        commands.entity(enemy_entity.0).despawn();
+    }
+}
+
 pub fn spawn_enemies_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,

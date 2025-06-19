@@ -10,6 +10,16 @@ use bevy::window::PrimaryWindow;
 
 use super::*;
 
+pub fn despawn_player(
+    mut commands: Commands,
+    mut player_query: Query<(Entity, &Transform), With<Player>>,
+) {
+    if let Ok((player_entity, _player_transform)) = player_query.single_mut() {
+        commands.entity(player_entity).despawn();
+        println!("deleted player");
+    }
+}
+
 pub fn spawn_player(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -103,6 +113,7 @@ pub fn enemy_hit_player(
             }
 
             // win condition
+            // 
             if score.value == SCORE_MAX {
                 game_over_event_w.write(GameOver { score: score.value as u32 });
                 commands.entity(player_entity).despawn();

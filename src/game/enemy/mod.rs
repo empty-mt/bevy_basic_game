@@ -21,7 +21,7 @@ impl Plugin for EnemyPlugin {
         .init_resource::<EnemyTimer>() 
         // .add_systems(Startup, spawn_enemies)
         //
-        // using sets again:
+        // using set:
         //
         // declare conditions for set:
         .configure_sets(
@@ -41,12 +41,18 @@ impl Plugin for EnemyPlugin {
         //     (spawn_enemies_over_time, tick_spawn_enemy_timer)
         //     .run_if(in_state(AppState::Game))
         //     .run_if(in_state(SimulationState::Running)))
+        //
+
+        // chain systems for clean movement
         .add_systems(
             Update, 
             (enemy_movement, update_enemy_movement, confine_enemy_movement)
             .run_if(in_state(AppState::Game))
             .run_if(in_state(SimulationState::Running))
             .chain())
+        
+        // 
+        .add_systems(Update, despawn_enemies.run_if(in_state(AppState::MainMenu)))
         ;
     }
 }

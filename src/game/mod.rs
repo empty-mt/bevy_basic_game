@@ -26,19 +26,14 @@ impl Plugin for GamePlugin {
             ScorePlugin,
         ))
         .add_systems(Update, handle_game_over)
-        // .add_systems(Update, in_game)
         .add_systems(Update, toggle_simulation.run_if(in_state(AppState::Game)))
         ;
     }
 }
 
-pub fn in_game() {
-    println!("in game");
-}
-
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum SimulationState {
-    Running, 
     #[default]
+    Running, 
     Paused,
 }

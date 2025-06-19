@@ -7,6 +7,7 @@ use bevy::prelude::*;
 pub enum PlayerSet {
     Movement,
     Confinement,
+    Collision,
 }
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]

@@ -5,6 +5,8 @@ mod systems;
 
 use bevy::prelude::*;
 use systems::*;
+use crate::{game::SimulationState, AppState};
+
 use super::super::sys_sets::*;
 // use resources::*;
 
@@ -20,16 +22,28 @@ impl Plugin for PlayerPlugin {
         app
         // using system set:
         //
-        // configure schedule and sets+order in configure_sets
-        .configure_sets(Update, (PlayerSet::Movement, PlayerSet::Confinement).chain()) 
-        // add systems from configured sets
+        // player movement: schedule and sets+orders+conditions:
+        .configure_sets(
+            Update, 
+            (PlayerSet::Collision, PlayerSet::Movement, PlayerSet::Confinement)
+            .run_if(in_state(AppState::Game))
+            .run_if(in_state(SimulationState::Running))
+            .chain()) 
+        // add systems from configured sets:
         .add_systems(Update, confine_player_movement.in_set(PlayerSet::Confinement))
         .add_systems(Update, player_movement.in_set(PlayerSet::Movement))
-        // to do:
+        .add_systems(Update, enemy_hit_player.in_set(PlayerSet::Collision))
+        // equals:
         //
-        // .add_systems(Update, (player_movement, confine_player_movement).chain())
-        
-        .add_systems(Startup, spawn_player)
-        .add_systems(Update, enemy_hit_player);
+        // .add_systems(Update, (player_movement, confine_player_movement)
+        // .run_if(...).run_if(...).chain())
+
+        // state systems
+        .add_systems(OnEnter(AppState::Game), spawn_player)
+        .add_systems(OnExit(AppState::Game), despawn_player)
+
+        // gameplay systems
+        // .add_systems(Update, enemy_hit_player)
+        ;
     }
 }
