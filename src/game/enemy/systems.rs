@@ -10,45 +10,45 @@ use bevy::window::PrimaryWindow;
 // using const in enemy/mod.rs
 use super::*;
 
-pub fn spawn_enemies(
-    // keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    asset_server: Res<AssetServer>,
-) {
-    let window = window_query.single().unwrap();
+// pub fn spawn_enemies(
+//     // keyboard_input: Res<ButtonInput<KeyCode>>,
+//     mut commands: Commands,
+//     window_query: Query<&Window, With<PrimaryWindow>>,
+//     asset_server: Res<AssetServer>,
+// ) {
+//     let window = window_query.single().unwrap();
 
-    // if keyboard_input.just_pressed(KeyCode::KeyK) {
-        for _ in 0..ENEMY_NUM {
-            let y = rand::rng().random_range(-1.0..1.0) * window.height() / 2.;
-            let x = rand::rng().random_range(-1.0..1.0) * window.width() / 2.;
-            // !! max_window does not upscale window.size()
-            //
-            // let vec = Vec3::new(x, y, 0.0);
-            // println!("{} {} == {:?} || {:?}",x,y,vec, window.size());
+//     // if keyboard_input.just_pressed(KeyCode::KeyK) {
+//         for _ in 0..ENEMY_NUM {
+//             let y = rand::rng().random_range(-1.0..1.0) * window.height() / 2.;
+//             let x = rand::rng().random_range(-1.0..1.0) * window.width() / 2.;
+//             // !! max_window does not upscale window.size()
+//             //
+//             // let vec = Vec3::new(x, y, 0.0);
+//             // println!("{} {} == {:?} || {:?}",x,y,vec, window.size());
 
-            commands.spawn((
-                Sprite::from_image(asset_server.load("sprites/tile_0005.png")),
-                // Sprite {
-                //     image: asset_server.load("sprites/tile_0005.png"), 
-                //     // image_mode: Auto,
-                //     // rect: Some(Rect::from_center_size(Vec2::new(x, y), Vec2::ONE)), 
-                //     ..default() },
-                Transform::from_xyz(x, y, 0.0),
-                // Transform::from_translation(vec),
-                Enemy {
-                    direction: Vec3::new(
-                        // rand::rng().random_range(-1..1) as f32,
-                        // rand::rng().random_range(-1..1) as f32,
-                        (rand::rng().random_range(0..2) * 2 - 1) as f32,
-                        (rand::rng().random_range(0..2) * 2 - 1) as f32,
-                        0.
-                    ).normalize_or_zero(),
-                },
-            ));
-        }
-    // }
-}
+//             commands.spawn((
+//                 Sprite::from_image(asset_server.load("sprites/tile_0005.png")),
+//                 // Sprite {
+//                 //     image: asset_server.load("sprites/tile_0005.png"), 
+//                 //     // image_mode: Auto,
+//                 //     // rect: Some(Rect::from_center_size(Vec2::new(x, y), Vec2::ONE)), 
+//                 //     ..default() },
+//                 Transform::from_xyz(x, y, 0.0),
+//                 // Transform::from_translation(vec),
+//                 Enemy {
+//                     direction: Vec3::new(
+//                         // rand::rng().random_range(-1..1) as f32,
+//                         // rand::rng().random_range(-1..1) as f32,
+//                         (rand::rng().random_range(0..2) * 2 - 1) as f32,
+//                         (rand::rng().random_range(0..2) * 2 - 1) as f32,
+//                         0.
+//                     ).normalize_or_zero(),
+//                 },
+//             ));
+//         }
+//     // }
+// }
 
 // enemy hits wall
 pub fn update_enemy_movement(
@@ -130,18 +130,18 @@ pub fn tick_spawn_enemy_timer(mut enemy_timer: ResMut<EnemyTimer>, time: Res<Tim
     enemy_timer.timer.tick(time.delta());
 }
 
-pub fn despawn_enemies_over_time(
-    mut commands: Commands,
-    despawn_timer: Res<EnemyTimer>,
-    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-) {
-    let mut enemy_entities: bevy::ecs::query::QueryIter<'_, '_, (Entity, &Transform), With<Enemy>> = enemy_query.iter_mut();
-    if let Some(enemy_entity) = enemy_entities.next() {
-        if despawn_timer.timer.finished() {
-            commands.entity(enemy_entity.0).despawn();
-        }
-    }
-}
+// pub fn despawn_enemies_over_time(
+//     mut commands: Commands,
+//     despawn_timer: Res<EnemyTimer>,
+//     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+// ) {
+//     let mut enemy_entities: bevy::ecs::query::QueryIter<'_, '_, (Entity, &Transform), With<Enemy>> = enemy_query.iter_mut();
+//     if let Some(enemy_entity) = enemy_entities.next() {
+//         if despawn_timer.timer.finished() {
+//             commands.entity(enemy_entity.0).despawn();
+//         }
+//     }
+// }
 
 pub fn despawn_enemies(
     mut commands: Commands,

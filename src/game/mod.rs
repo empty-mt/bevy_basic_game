@@ -25,7 +25,8 @@ impl Plugin for GamePlugin {
             EnemyPlugin,
             ScorePlugin,
         ))
-        .add_systems(Update, handle_game_over)
+        // on event condition
+        .add_systems(Update, handle_game_over.run_if(on_event::<GameOver>))
         .add_systems(Update, toggle_simulation.run_if(in_state(AppState::Game)))
         ;
     }

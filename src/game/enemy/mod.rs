@@ -11,7 +11,7 @@ use crate::sys_sets::EnemySet;
 
 pub const ENEMY_SIZE: f32 = 64.0;       // nmy sprite size
 pub const ENEMY_SPEED: f32 = 200.0;
-pub const ENEMY_NUM: i16 = 16;
+pub const _ENEMY_NUM: i16 = 16;
 
 pub struct EnemyPlugin;
 

@@ -87,7 +87,6 @@ pub fn confine_player_movement(
 // check if pixel of player and nmy are overlapping
 pub fn enemy_hit_player(
     mut commands: Commands,
-    mut app_exit_event_w: EventWriter<AppExit>,
     mut game_over_event_w: EventWriter<GameOver>,
     mut player_query: Query<(Entity, &Transform), With<Player>>,
     // mut enemy_query: Query<&Transform, With<Enemy>>,
@@ -95,7 +94,7 @@ pub fn enemy_hit_player(
     asset_server: Res<AssetServer>,
     mut score: ResMut<Score>,
 ) {
-    if let Ok((player_entity, player_transform)) = player_query.single_mut() {
+    if let Ok((_player_entity, player_transform)) = player_query.single_mut() {
         // for enemy_transform in enemy_query.iter() {
         for (enemy_entity, enemy_transform) in enemy_query.iter_mut() {
 
@@ -116,8 +115,8 @@ pub fn enemy_hit_player(
             // 
             if score.value == SCORE_MAX {
                 game_over_event_w.write(GameOver { score: score.value as u32 });
-                commands.entity(player_entity).despawn();
-                app_exit_event_w.write(AppExit::Success);
+                // commands.entity(player_entity).despawn();
+                // app_exit_event_w.write(AppExit::Success);
             }
         }
     }
