@@ -1,7 +1,6 @@
 // using 0.10 guide
 // https://www.youtube.com/watch?v=TQt-v_bFdao&list=PLVnntJRoP85JHGX7rGDu6LaF3fmDDbqyd&index=2
 
-// mod events;
 mod global_systems;
 mod global_plugins;
 mod sys_sets;
@@ -11,7 +10,6 @@ mod events;
 
 use bevy::prelude::*;
 use global_plugins::*;
-
 use game::GamePlugin;
 use main_menu::MainMenuPlugin;
 

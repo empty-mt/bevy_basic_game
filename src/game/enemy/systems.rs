@@ -7,7 +7,7 @@ use bevy::prelude::*;
 use rand::Rng;
 use bevy::window::PrimaryWindow;
 
-// using the const in enemy/mod.rs
+// using const in enemy/mod.rs
 use super::*;
 
 pub fn spawn_enemies(
@@ -126,7 +126,7 @@ pub fn confine_enemy_movement(
 }
 
 // tick every time.delta()
-pub fn tick_despawn_enemy_timer(mut enemy_timer: ResMut<EnemyTimer>, time: Res<Time>) {
+pub fn tick_spawn_enemy_timer(mut enemy_timer: ResMut<EnemyTimer>, time: Res<Time>) {
     enemy_timer.timer.tick(time.delta());
 }
 

@@ -2,7 +2,6 @@
 use crate::game::player::components::*;
 use crate::game::score::resources::*;
 use crate::game::enemy::components::*;
-// use crate::events::*;
 use crate::events::*;
 use crate::game::enemy::{ENEMY_SIZE};
 

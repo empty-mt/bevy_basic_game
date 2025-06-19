@@ -8,3 +8,6 @@ pub enum PlayerSet {
     Movement,
     Confinement,
 }
+
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub struct EnemySet;

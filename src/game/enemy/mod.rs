@@ -1,6 +1,4 @@
 // declare submodules here
-
-
 pub mod components;
 pub mod resources;
 mod systems;
@@ -8,6 +6,8 @@ mod systems;
 use bevy::prelude::*;
 use systems::*;
 use resources::*;
+use crate::{game::SimulationState, AppState};
+use crate::sys_sets::EnemySet;
 
 pub const ENEMY_SIZE: f32 = 64.0;       // nmy sprite size
 pub const ENEMY_SPEED: f32 = 200.0;
@@ -20,12 +20,33 @@ impl Plugin for EnemyPlugin {
         app
         .init_resource::<EnemyTimer>() 
         // .add_systems(Startup, spawn_enemies)
-        // .add_systems(Update, despawn_enemies_over_time)
-        // .add_systems(Update, spawn_enemies)
-        // .add_systems(Update, update_enemy_movement)
-        // .add_systems(Update, confine_enemy_movement);
-        .add_systems(Update, tick_despawn_enemy_timer)
-        .add_systems(Update, spawn_enemies_over_time)
-        .add_systems(Update, (enemy_movement, update_enemy_movement, confine_enemy_movement).chain());
+        //
+        // using sets again:
+        //
+        // declare conditions for set:
+        .configure_sets(
+            Update, 
+            EnemySet
+            .run_if(in_state(AppState::Game))
+            .run_if(in_state(SimulationState::Running)))
+        // ..and add systems to set:
+        .add_systems(
+            Update, 
+            (spawn_enemies_over_time, tick_spawn_enemy_timer)
+            .in_set(EnemySet))
+        // equals:
+        //
+        // .add_systems(
+        //     Update, 
+        //     (spawn_enemies_over_time, tick_spawn_enemy_timer)
+        //     .run_if(in_state(AppState::Game))
+        //     .run_if(in_state(SimulationState::Running)))
+        .add_systems(
+            Update, 
+            (enemy_movement, update_enemy_movement, confine_enemy_movement)
+            .run_if(in_state(AppState::Game))
+            .run_if(in_state(SimulationState::Running))
+            .chain())
+        ;
     }
 }
