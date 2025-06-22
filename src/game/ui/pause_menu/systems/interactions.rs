@@ -1,14 +1,14 @@
 use bevy::prelude::*;
-use bevy::app::AppExit;
 
-use crate::main_menu::components::{PlayButton, QuitButton};
-use crate::main_menu::styles::*;
+use crate::game::ui::pause_menu::components::{ResumeButton, MainMenuButton};
+use crate::game::ui::pause_menu::styles::*;
+use crate::game::SimulationState;
 use crate::AppState;
 
 pub fn interact_with_button(
     // mut button_query: Query<(&Interaction, &mut BackgroundColor, Entity), Changed<Interaction>>,
     // button_play_query: Query<(), With<PlayButton>>,
-    // button_quit_query: Query<(), With<QuitButton>>,
+    // button_quit_query: Query<(), With<MainMenuButton>>,
     // 
     // or:
     //
@@ -17,12 +17,12 @@ pub fn interact_with_button(
                 &Interaction, 
                 &mut BackgroundColor, 
                 // has to be ref to buttons
-                Option<&PlayButton>, 
-                Option<&QuitButton>
+                Option<&ResumeButton>, 
+                Option<&MainMenuButton>
                 ), 
             Changed<Interaction>>,
         mut app_state_next: ResMut<NextState<AppState>>,
-        mut event_w: EventWriter<AppExit>,
+        mut sim_state_next: ResMut<NextState<SimulationState>>,
     // 
     // or:
     //
@@ -38,12 +38,13 @@ pub fn interact_with_button(
                     *bg_color = UI_HOVERED_BUTTON.into();
                 }
                 Interaction::Pressed => {
-                    // start game
+                    // resume game
                     app_state_next.set(AppState::Game);
+                    sim_state_next.set(SimulationState::Running);
                     *bg_color = UI_PRESSED_BUTTON.into();
                 }
                 Interaction::None => {
-                    *bg_color = UI_PLAY_BUTTON_BG_COL.into();  
+                    *bg_color = UI_RESUME_BUTTON_BG_COL.into();  
                 }
             }
         }
@@ -53,8 +54,9 @@ pub fn interact_with_button(
                     *bg_color = UI_HOVERED_BUTTON.into();
                 }
                 Interaction::Pressed => {
-                    // quit game
-                    event_w.write(AppExit::Success);
+                    // go back to main menu
+                    app_state_next.set(AppState::MainMenu);
+                    sim_state_next.set(SimulationState::Running);
                     *bg_color = UI_PRESSED_BUTTON.into();
                 }
                 Interaction::None => {

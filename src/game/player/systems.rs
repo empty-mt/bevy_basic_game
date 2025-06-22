@@ -88,6 +88,7 @@ pub fn confine_player_movement(
 pub fn enemy_hit_player(
     mut commands: Commands,
     mut game_over_event_w: EventWriter<GameOver>,
+    mut app_state_next: ResMut<NextState<AppState>>,
     mut player_query: Query<(Entity, &Transform), With<Player>>,
     // mut enemy_query: Query<&Transform, With<Enemy>>,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
@@ -115,8 +116,7 @@ pub fn enemy_hit_player(
             // 
             if score.value == SCORE_MAX {
                 game_over_event_w.write(GameOver { score: score.value as u32 });
-                // commands.entity(player_entity).despawn();
-                // app_exit_event_w.write(AppExit::Success);
+                app_state_next.set(AppState::GameOver);
             }
         }
     }

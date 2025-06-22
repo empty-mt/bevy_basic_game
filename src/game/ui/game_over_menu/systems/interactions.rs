@@ -1,14 +1,13 @@
 use bevy::prelude::*;
-use bevy::app::AppExit;
 
-use crate::main_menu::components::{PlayButton, QuitButton};
-use crate::main_menu::styles::*;
+use crate::game::ui::game_over_menu::components::{RestartButton, MainMenuButton};
+use crate::game::ui::game_over_menu::styles::*;
 use crate::AppState;
 
 pub fn interact_with_button(
     // mut button_query: Query<(&Interaction, &mut BackgroundColor, Entity), Changed<Interaction>>,
     // button_play_query: Query<(), With<PlayButton>>,
-    // button_quit_query: Query<(), With<QuitButton>>,
+    // button_quit_query: Query<(), With<MainMenuButton>>,
     // 
     // or:
     //
@@ -17,12 +16,11 @@ pub fn interact_with_button(
                 &Interaction, 
                 &mut BackgroundColor, 
                 // has to be ref to buttons
-                Option<&PlayButton>, 
-                Option<&QuitButton>
+                Option<&RestartButton>, 
+                Option<&MainMenuButton>
                 ), 
             Changed<Interaction>>,
         mut app_state_next: ResMut<NextState<AppState>>,
-        mut event_w: EventWriter<AppExit>,
     // 
     // or:
     //
@@ -30,36 +28,36 @@ pub fn interact_with_button(
     // -> only interaction query here, no seperate button query
 ) {
     // for (interaction, mut bg_color, entity) in button_query.iter_mut() {
-    for (interaction, mut bg_color, play_b, quit_b) in button_query.iter_mut() {
+    for (interaction, mut bg_color, restart_b, mmenu_b) in button_query.iter_mut() {
         // if button_play_query.get(entity).is_ok() {
-        if let Some(_) = play_b {
+        if let Some(_) = restart_b {
             match *interaction {
                 Interaction::Hovered => {
                     *bg_color = UI_HOVERED_BUTTON.into();
                 }
                 Interaction::Pressed => {
-                    // start game
+                    // resume game
                     app_state_next.set(AppState::Game);
                     *bg_color = UI_PRESSED_BUTTON.into();
                 }
                 Interaction::None => {
-                    *bg_color = UI_PLAY_BUTTON_BG_COL.into();  
+                    *bg_color = UI_RESTART_BUTTON_BG_COL.into();  
                 }
             }
         }
-        else if let Some(_) = quit_b {
+        else if let Some(_) = mmenu_b {
                     match *interaction {
                 Interaction::Hovered => {
                     *bg_color = UI_HOVERED_BUTTON.into();
                 }
                 Interaction::Pressed => {
-                    // quit game
-                    event_w.write(AppExit::Success);
+                    // go back to main menu
+                    app_state_next.set(AppState::MainMenu);
                     *bg_color = UI_PRESSED_BUTTON.into();
                 }
                 Interaction::None => {
                     // } else if button_quit_query.get(entity).is_ok() {
-                        *bg_color = UI_QUIT_BUTTON_BG_COL.into();
+                        *bg_color = UI_MAIN_MENU_BUTTON_BG_COL.into();
                 }
             }
         }

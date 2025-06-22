@@ -145,11 +145,16 @@ pub fn tick_spawn_enemy_timer(mut enemy_timer: ResMut<EnemyTimer>, time: Res<Tim
 
 pub fn despawn_enemies(
     mut commands: Commands,
-    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    // mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    enemy_query: Query<Entity, With<Enemy>>,
 ) {
-    let mut enemy_entities: bevy::ecs::query::QueryIter<'_, '_, (Entity, &Transform), With<Enemy>> = enemy_query.iter_mut();
-    if let Some(enemy_entity) = enemy_entities.next() {
-        commands.entity(enemy_entity.0).despawn();
+    println!("despwn");
+    // let mut enemy_entities: bevy::ecs::query::QueryIter<'_, '_, (Entity, &Transform), With<Enemy>> = enemy_query.iter_mut();
+    // if let Some(enemy_entity) = enemy_entities.next() {
+    //     commands.entity(enemy_entity.0).despawn();
+    // }
+    for enemy_entity in enemy_query.iter() {
+        commands.entity(enemy_entity).despawn();
     }
 }
 

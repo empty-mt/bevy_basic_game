@@ -16,8 +16,9 @@ impl Plugin for ScorePlugin {
         app
         .init_resource::<Score>() 
         .add_systems(OnEnter(AppState::Game), insert_score)
-        .add_systems(OnExit(AppState::Game), remove_score)
         .add_systems(Update, print_score.run_if(in_state(AppState::Game)))
+        // one time rm -> one score
+        .add_systems(OnExit(AppState::Game), remove_score)
         ;
     }
 }

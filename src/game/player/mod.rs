@@ -40,6 +40,7 @@ impl Plugin for PlayerPlugin {
 
         // state systems
         .add_systems(OnEnter(AppState::Game), spawn_player)
+        // one time, because we have one player
         .add_systems(OnExit(AppState::Game), despawn_player)
 
         // gameplay systems

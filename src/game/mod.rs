@@ -1,6 +1,7 @@
 pub mod enemy;
 pub mod player;
 pub mod score;
+pub mod ui;
 mod systems;
 
 use bevy::prelude::*;
@@ -9,6 +10,7 @@ use super::global_systems::*;
 use player::PlayerPlugin;
 use enemy::EnemyPlugin;
 use score::ScorePlugin;
+use ui::UiPlugin;
 use systems::*;
 use crate::AppState;
 
@@ -24,6 +26,7 @@ impl Plugin for GamePlugin {
             PlayerPlugin,
             EnemyPlugin,
             ScorePlugin,
+            UiPlugin,
         ))
         // on event condition
         .add_systems(Update, handle_game_over.run_if(on_event::<GameOver>))

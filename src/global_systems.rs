@@ -6,8 +6,13 @@ use bevy::window::PrimaryWindow;
 use crate::events::*;
 use crate::game::SimulationState;
 use crate::AppState;
+use crate::game::enemy::components::Enemy;
 
 pub const GLOBAL_VOLUME: f32 = 0.1;     // [0.0 - 1.0]
+
+//
+// setup
+//
 
 pub fn max_window(windows: Query<&mut Window>) {
     for mut window in windows {
@@ -28,6 +33,10 @@ pub fn spawn_camera(
     commands.spawn(Camera2d{});
 }
 
+//
+// actions
+//
+
 // close app
 pub fn exit_game(
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -46,7 +55,6 @@ pub fn handle_game_over(
         println!("reached goal of {:?} kills.", event.score.to_string());
         
         next_state.set(AppState::GameOver);
-        println!("appstate: game over");
     }
 }
 
@@ -59,7 +67,6 @@ pub fn transition_to_game_state(
     if keyboard_input.just_pressed(KeyCode::KeyM) {
         if *app_state.get() != AppState::Game {
             next_state.set(AppState::Game);
-            println!("appstate: game");
         }
     }
 }
@@ -76,7 +83,46 @@ pub fn transition_to_main_menu_state(
         if *app_state.get() != AppState::MainMenu {
             next_state.set(AppState::MainMenu);
             next_sim_state.set(SimulationState::Running);
-            println!("appstate: main menu");
         }
+    }
+}
+
+//
+// debug
+//
+
+pub fn print_appstate(
+    mut events: EventReader<StateTransitionEvent<AppState>>,
+) {
+    for event in events.read() {
+        println!("{:?}", event);
+    }
+}
+
+pub fn force_enemy_despawn(
+    mut commands: Commands,
+    enemy_query: Query<Entity, With<Enemy>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyO) {
+        for enemy_entity in enemy_query.iter() {
+            commands.entity(enemy_entity).despawn();
+        }
+    }
+}
+//
+// UI stuff
+//
+
+// styles
+
+pub fn ui_create_basic_button_node() -> Node {
+    Node {
+        width: Val::Px(200.0),
+        height: Val::Px(80.0),
+        justify_content: JustifyContent::Center,
+        flex_direction: FlexDirection::Column,
+        align_items: AlignItems::Center,
+        ..default()
     }
 }
