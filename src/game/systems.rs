@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::game::SimulationState;
 
+// pause the game
 pub fn toggle_simulation(
     // mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,

@@ -1,3 +1,4 @@
+use bevy::color::palettes::tailwind::*;
 use bevy::prelude::*;
 use crate::main_menu::components::*;
 use crate::main_menu::styles::*;
@@ -7,9 +8,10 @@ pub fn spawn_main_menu(
     meshes: ResMut<Assets<Mesh>>,
     asset_server: Res<AssetServer>,
     materials: ResMut<Assets<ColorMaterial>>,
+    gizmo_assets: ResMut<Assets<GizmoAsset>>,
 ) {
     // let main_menu_entity: Entity =
-    build_main_menu(&mut commands, meshes, &asset_server, materials);
+    build_main_menu(&mut commands, meshes, &asset_server, materials, gizmo_assets);
 }
 
 pub fn despawn_main_menu(
@@ -22,9 +24,10 @@ pub fn despawn_main_menu(
 }
 pub fn build_main_menu(
     commands: &mut Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
+    meshes: ResMut<Assets<Mesh>>,
     asset_server: &Res<AssetServer>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    materials: ResMut<Assets<ColorMaterial>>,
+    mut gizmo_assets: ResMut<Assets<GizmoAsset>>,
 ) -> Entity {
     // main menu
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
@@ -50,6 +53,11 @@ pub fn build_main_menu(
     //
 
     // gameinfo widget
+    //
+    // have to figure out, how to spawn meshes and gizmos or other elements
+    //
+    // ****** not finished ******
+    //
     commands.spawn((
         Node {
             width: Val::Px(420.0),
@@ -67,21 +75,38 @@ pub fn build_main_menu(
     .with_children(
         |parent| {
             // image part
-            parent.spawn(
-                Node {
-                    width: Val::Px(100.0),
-                    height: Val::Px(100.0),
-                    ..default()
-                }
+            let mut gizmo = GizmoAsset::default();
+
+            gizmo
+            .primitive_2d( &Circle::new(5.0), 
+                Isometry2d::default(), 
+                RED_300
             )
-            .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
-            .insert(BorderRadius {
-                top_left: Val::Px(100.0),
-                top_right: Val::Px(100.0),
-                bottom_left: Val::Px(100.0),
-                bottom_right: Val::Px(100.0),
-            })
-            ;
+            .resolution(64);
+
+            parent.spawn( Gizmo {
+                handle: gizmo_assets.add(gizmo),
+                        line_config: GizmoLineConfig {
+                            width: 4.,
+                            ..default()
+                        },
+                ..default()
+            });
+            // parent.spawn(
+            //     Node {
+            //         width: Val::Px(100.0),
+            //         height: Val::Px(100.0),
+            //         ..default()
+            //     }
+            // )
+            // .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
+            // .insert(BorderRadius {
+            //     top_left: Val::Px(100.0),
+            //     top_right: Val::Px(100.0),
+            //     bottom_left: Val::Px(100.0),
+            //     bottom_right: Val::Px(100.0),
+            // })
+            
         // Sprite {
         //         image: asset_server.load("sprites/tile_0005.png"),
         //         color: Color::BLACK, 
@@ -99,31 +124,44 @@ pub fn build_main_menu(
             ));
 
             // image 2 part 
-            // parent.spawn(
-            //     Node {
-            //         width: Val::Px(200.0),
-            //         height: Val::Px(80.0),
-            //         ..default()
-            //     }
-            // )
-            // .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
-            // ;
+            parent.spawn(
+                Node {
+                    width: Val::Px(200.0),
+                    height: Val::Px(80.0),
+                    ..default()
+                }
+            )
+            .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
+            ;
 
-            let shape = meshes.add(Circle::default());
-            parent.spawn((
-                Mesh2d(shape),
-                MeshMaterial2d(materials.add(ColorMaterial::from_color(Color::BLACK))),
-            ));
+            // let shape = meshes.add(Circle::default());
+            // parent.spawn((
+            //     Mesh2d(shape),
+            //     MeshMaterial2d(materials.add(ColorMaterial::from_color(Color::BLACK))),
+            // ));
         }
     );
+    //
+    // ****** not finished ******
+    //
     
     // button play
+    //
+    // make fn button_gen(), if more buttons are needed
+    //
     commands.spawn((
-        UI_create_basic_button_node(),
-        PlayButton {}
+        ui_create_basic_button_node(),
+        PlayButton,
+        // have to set the interaction manually, cause there is no default set?
+        Interaction::default(),
         ))
         .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
         .insert(ChildOf(main_menu_entity))
+        // debug:
+        //
+        // .observe(|trigger: Trigger<Pointer<Click>>| {
+        //     info!("start");
+        // })
         .with_children(
             |parent| {
                 parent.spawn((
@@ -139,8 +177,9 @@ pub fn build_main_menu(
 
     // button quit app
     commands.spawn((
-        UI_create_basic_button_node(),
-        QuitButton {}
+        ui_create_basic_button_node(),
+        QuitButton,
+        Interaction::default(),
         ))
         .insert(BackgroundColor(UI_QUIT_BUTTON_BG_COL))
         .insert(ChildOf(main_menu_entity))
