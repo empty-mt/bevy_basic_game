@@ -14,7 +14,7 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(
             (
-            // HudPlugin,
+            HudPlugin,
             PauseMenuPlugin,
             GameOverMenuPlugin,
         ));

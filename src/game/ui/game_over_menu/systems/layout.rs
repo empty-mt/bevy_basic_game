@@ -15,9 +15,9 @@ pub fn spawn_game_over_menu(
 
 pub fn despawn_game_over_menu(
     mut commands: Commands,
-    main_menu_query: Query<Entity, With<GameOverMenu>>,
+    game_over_menu_query: Query<Entity, With<GameOverMenu>>,
 ) {
-    if let Ok(main_menu_entity) = main_menu_query.single() {
+    if let Ok(main_menu_entity) = game_over_menu_query.single() {
         commands.entity(main_menu_entity).despawn();
     }
 }
@@ -52,6 +52,7 @@ pub fn build_game_over_menu(
     //
     // make fn button_gen(), if more buttons are needed
     //
+
     commands.spawn((
         ui_create_basic_button_node(),
         RestartButton,
