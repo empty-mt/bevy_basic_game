@@ -1,7 +1,9 @@
+
 // use crate::game::player::resources::*;
 use crate::game::player::components::*;
 use crate::game::score::resources::*;
 use crate::game::enemy::components::*;
+use crate::game::ui::hud::components::*;
 use crate::events::*;
 use crate::game::enemy::{ENEMY_SIZE};
 
@@ -16,7 +18,6 @@ pub fn despawn_player(
 ) {
     if let Ok((player_entity, _player_transform)) = player_query.single_mut() {
         commands.entity(player_entity).despawn();
-        println!("deleted player");
     }
 }
 
@@ -64,15 +65,21 @@ pub fn player_movement(
 pub fn confine_player_movement(
     mut player_query: Query<&mut Transform, With<Player>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
+    hud_query: Query<&Node, With<Hud>>,
 ) {
     if let Ok(mut player_transform) = player_query.single_mut() {
         let window = window_query.single().unwrap();
+        // prevent player from moving "under" ui
+        let hud_node = hud_query.single().unwrap();
+        let hud_offset = hud_node.height.resolve(window.height(), Vec2::ONE);
+        
         // why "size/8" is necessary -> sprite issue?
         let eighth_size = PLAYER_SIZE / 8.0;
         let x_min = (window.width()/-2.0) + eighth_size;
         let x_max = (window.width()/2.0) - eighth_size;
         let y_min = (window.height()/-2.0) + eighth_size;
-        let y_max = (window.height()/2.0) - eighth_size;
+        // prevent player from moving "under" ui
+        let y_max = (window.height()/2.0) - eighth_size - hud_offset.unwrap();
         let mut translation = player_transform.translation;
 
         // constraint for player x and y pos

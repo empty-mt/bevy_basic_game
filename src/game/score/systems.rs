@@ -4,11 +4,11 @@ use bevy::prelude::*;
 // or:
 use super::resources::*;
 
-pub fn print_score(score: Res<Score>) {
-    if score.is_changed() {
-        println!("{:?}", score.value);
-    }
-}
+// pub fn print_score(score: Res<Score>) {
+//     if score.is_changed() {
+//         println!("{:?}", score.value);
+//     }
+// }
 
 pub fn insert_score(
     mut commands: Commands,

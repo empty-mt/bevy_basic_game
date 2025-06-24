@@ -1,7 +1,5 @@
-use std::any::Any;
-
 use::bevy::prelude::*;
-use bevy::reflect::{DynamicTypePath, DynamicTyped};
+use bevy::reflect::DynamicTyped;
 
 use crate::game::score::resources::Score;
 use crate::game::ui::hud::components::{ScoreText, ScoreDisplay};
