@@ -38,6 +38,8 @@ pub fn build_pause_menu(
                 align_items: AlignItems::Center,
                 row_gap: Val::Px(8.0),
                 column_gap: Val::Px(8.0),
+                // make space for hud
+                bottom: Val::Percent(-5.0),
                 ..default() },
             PauseMenu {})
     )

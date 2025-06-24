@@ -23,10 +23,10 @@ impl Plugin for GamePlugin {
         .insert_state(SimulationState::default())
         .add_event::<GameOver>()
         .add_plugins((            
+            UiPlugin,
             PlayerPlugin,
             EnemyPlugin,
             ScorePlugin,
-            UiPlugin,
         ))
         // on event condition
         .add_systems(Update, handle_game_over.run_if(on_event::<GameOver>))

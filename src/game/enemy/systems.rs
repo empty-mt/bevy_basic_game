@@ -55,8 +55,6 @@ use super::*;
 pub fn update_enemy_movement(
     mut enemy_query: Query<(&Transform, &mut Enemy), With<Enemy>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    // Single instead of Query 
-    // mut music_controller: Single<&mut AudioSink>,
     asset_server: Res<AssetServer>,
     mut commands: Commands,
     hud_query: Query<&Node, With<Hud>>,
