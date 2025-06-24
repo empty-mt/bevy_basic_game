@@ -3,7 +3,10 @@ mod styles;
 mod systems;
 
 use::bevy::prelude::*;
-use systems::layout::*;
+use systems::{
+    layout::*, 
+    updates::*
+};
 use crate::AppState;
 
 pub struct HudPlugin;
@@ -11,7 +14,16 @@ pub struct HudPlugin;
 impl Plugin for HudPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::Game), spawn_hud);
-        // app.add_systems(Update, interact_with_button.run_if(in_state(AppState::GameOver)));
+
+        app.add_systems(Update, 
+            update_hud_score
+            .run_if(in_state(AppState::Game))
+            .after(spawn_hud)
+            );
+
+        // debug
+        app.add_systems(Update, debug_texts);
+        //
         app.add_systems(OnExit(AppState::Game), despawn_hud);
         
     }

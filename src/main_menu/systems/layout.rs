@@ -1,17 +1,13 @@
-use bevy::color::palettes::tailwind::*;
 use bevy::prelude::*;
 use crate::main_menu::components::*;
 use crate::main_menu::styles::*;
 
 pub fn spawn_main_menu(
     mut commands: Commands,
-    meshes: ResMut<Assets<Mesh>>,
     asset_server: Res<AssetServer>,
-    materials: ResMut<Assets<ColorMaterial>>,
-    gizmo_assets: ResMut<Assets<GizmoAsset>>,
 ) {
     // let main_menu_entity: Entity =
-    build_main_menu(&mut commands, meshes, &asset_server, materials, gizmo_assets);
+    build_main_menu(&mut commands, &asset_server);
 }
 
 pub fn despawn_main_menu(
@@ -24,10 +20,7 @@ pub fn despawn_main_menu(
 }
 pub fn build_main_menu(
     commands: &mut Commands,
-    meshes: ResMut<Assets<Mesh>>,
     asset_server: &Res<AssetServer>,
-    materials: ResMut<Assets<ColorMaterial>>,
-    mut gizmo_assets: ResMut<Assets<GizmoAsset>>,
 ) -> Entity {
     // main menu
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
@@ -74,45 +67,11 @@ pub fn build_main_menu(
     .insert(Visibility::default())
     .with_children(
         |parent| {
-            // image part
-            let mut gizmo = GizmoAsset::default();
+            // ### image part
+            //
+            // use UiImage or plain Node here
 
-            gizmo
-            .primitive_2d( &Circle::new(5.0), 
-                Isometry2d::default(), 
-                RED_300
-            )
-            .resolution(64);
-
-            parent.spawn( Gizmo {
-                handle: gizmo_assets.add(gizmo),
-                        line_config: GizmoLineConfig {
-                            width: 4.,
-                            ..default()
-                        },
-                ..default()
-            });
-            // parent.spawn(
-            //     Node {
-            //         width: Val::Px(100.0),
-            //         height: Val::Px(100.0),
-            //         ..default()
-            //     }
-            // )
-            // .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
-            // .insert(BorderRadius {
-            //     top_left: Val::Px(100.0),
-            //     top_right: Val::Px(100.0),
-            //     bottom_left: Val::Px(100.0),
-            //     bottom_right: Val::Px(100.0),
-            // })
-            
-        // Sprite {
-        //         image: asset_server.load("sprites/tile_0005.png"),
-        //         color: Color::BLACK, 
-        //         ..default() },
-
-            // text part
+            // ### text part
             parent.spawn((
                 TextFont {
                     font: font.clone(),
@@ -123,7 +82,7 @@ pub fn build_main_menu(
                 TextColor::from(UI_FONT_COL),
             ));
 
-            // image 2 part 
+            // ## image 2 part 
             parent.spawn(
                 Node {
                     width: Val::Px(200.0),
@@ -133,21 +92,14 @@ pub fn build_main_menu(
             )
             .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
             ;
-
-            // let shape = meshes.add(Circle::default());
-            // parent.spawn((
-            //     Mesh2d(shape),
-            //     MeshMaterial2d(materials.add(ColorMaterial::from_color(Color::BLACK))),
-            // ));
         }
     );
     //
     // ****** not finished ******
     //
     
-    // button play
     //
-    // make fn button_gen(), if more buttons are needed
+    // button play
     //
     commands.spawn((
         ui_create_basic_button_node(),

@@ -1,8 +1,5 @@
-use bevy::math::VectorSpace;
 use bevy::prelude::*;
-use bevy::sprite::Anchor;
-use bevy::window::PrimaryWindow;
-
+use bevy::text::ComputedTextBlock;
 
 use crate::game::ui::hud::styles::*;
 use crate::game::ui::hud::components::*;
@@ -64,7 +61,8 @@ pub fn build_hud(
             (
                 BackgroundColor(HUD_BG_COL.into()),
                 BorderColor(HUB_BORDER_COL.into()),
-                BorderRadius::all(Val::Px(10.0))
+                BorderRadius::all(Val::Px(10.0)),
+                // TextLayout::default(),
             ),
             //
             // children nodes
@@ -97,11 +95,13 @@ pub fn build_hud(
                 // child of child
                 //
                 children![
+                    (
                     ImageNode {
                         image: image,
                         ..default()
                     },
                     EnemyImage,
+                    )
                 ]),
 
                 // ### score display
@@ -122,25 +122,51 @@ pub fn build_hud(
                     display: Display::Flex,
                     row_gap: Val::Px(8.0),
                     column_gap: Val::Px(8.0),
-                    ..default() },
+                    ..default() 
+                },
+                //
+                // additional style bundle
+                //
+                (
+                    BorderColor(HUB_BORDER_COL.into()),
+                    BorderRadius::all(Val::Px(10.0)),
+                    TextLayout::default(),
+                    ComputedTextBlock::default(),
+                    // 
                     //
-                    // additional style bundle
+                    // Text::new("XXXXX"),
+                    // TextFont {
+                    //     font: font.clone(),
+                    //     font_size: 25.0,
+                    //     ..Default::default()
+                    // },
+                    // TextColor::from(UI_FONT_COL),
                     //
-                    (
-                        BorderColor(HUB_BORDER_COL.into()),
-                        BorderRadius::all(Val::Px(10.0))
-                    ),
+                    //
+
+                ),
                 children![
+                    ( // <--- ! fml .../(*.*/)
+
+                    ScoreText,
+                    Text::new("X"),
                     TextFont {
                         font: font.clone(),
                         font_size: 25.0,
                         ..Default::default()
                     },
-                    (
-                        Text::new("XXX"),
-                        TextColor::from(UI_FONT_COL)
-                    )
-                ]),
+                    TextColor::from(UI_FONT_COL),
+                    // With Text2d the justify field of TextLayout only affects the internal alignment of a block of text and not its relative position, 
+                    // which is controlled by the Anchor component
+                    // Text2d::new("X"),
+                    
+                    // Node::default(),
+                    // Text::from("X"),
+                    // TextSpan::from("X"),
+
+                    ) // <--- !
+                    ]
+                ),
             ],
         )
     )
