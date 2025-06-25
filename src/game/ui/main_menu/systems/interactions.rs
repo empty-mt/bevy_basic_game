@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy::app::AppExit;
 
-use crate::main_menu::components::{PlayButton, QuitButton};
-use crate::main_menu::styles::*;
 use crate::AppState;
+use super::super::components::*;
+use super::super::styles::*;
 
 pub fn interact_with_button(
     // mut button_query: Query<(&Interaction, &mut BackgroundColor, Entity), Changed<Interaction>>,

@@ -51,7 +51,7 @@ pub fn handle_game_over(
     mut game_over_event_r: EventReader<GameOver>,
     mut next_state: ResMut<NextState<AppState>>,
 ) {
-    for event in game_over_event_r.read() {
+    for _event in game_over_event_r.read() {
         // println!("reached goal of {:?} kills.", event.score.to_string());
         
         next_state.set(AppState::GameOver);
@@ -126,3 +126,19 @@ pub fn ui_create_basic_button_node() -> Node {
         ..default()
     }
 }
+
+pub fn ui_create_rounded_rect_button_node() -> Node {
+    Node {
+        width: Val::Px(200.0),
+        height: Val::Px(80.0),
+        justify_content: JustifyContent::Center,
+        flex_direction: FlexDirection::Column,
+        align_items: AlignItems::Center,
+        padding: UiRect::all(Val::Px(6.0)),
+        border: UiRect::all(Val::Px(2.0)),
+        ..default()
+    }
+}
+
+
+

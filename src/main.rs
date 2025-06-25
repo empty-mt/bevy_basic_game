@@ -5,13 +5,11 @@ mod global_systems;
 mod global_plugins;
 mod sys_sets;
 mod game;
-mod main_menu;
 mod events;
 
 use bevy::prelude::*;
 use global_plugins::*;
 use game::GamePlugin;
-use main_menu::MainMenuPlugin;
 
 fn main() {
     let mut app = App::new();
@@ -29,7 +27,6 @@ impl Plugin for CustomPlugin {
         .add_plugins(DefaultPlugins)
         .insert_state(AppState::default())
         .add_plugins((
-            MainMenuPlugin,
             GamePlugin,
             GlobalPlugin,
         ));

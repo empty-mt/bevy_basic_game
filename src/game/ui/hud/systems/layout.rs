@@ -60,7 +60,7 @@ pub fn build_hud(
             //
             (
                 BackgroundColor(HUD_BG_COL.into()),
-                BorderColor(HUB_BORDER_COL.into()),
+                BorderColor(HUD_BORDER_COL.into()),
                 BorderRadius::all(Val::Px(10.0)),
                 // TextLayout::default(),
             ),
@@ -88,7 +88,7 @@ pub fn build_hud(
                 // additional style bundle
                 //
                 (
-                    BorderColor(HUB_BORDER_COL.into()),
+                    BorderColor(HUD_BORDER_COL.into()),
                     BorderRadius::all(Val::Px(10.0))
                 ),
                 //
@@ -128,7 +128,7 @@ pub fn build_hud(
                 // additional style bundle
                 //
                 (
-                    BorderColor(HUB_BORDER_COL.into()),
+                    BorderColor(HUD_BORDER_COL.into()),
                     BorderRadius::all(Val::Px(10.0)),
                     TextLayout::default(),
                     ComputedTextBlock::default(),

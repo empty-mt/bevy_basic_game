@@ -1,6 +1,8 @@
 use bevy::prelude::*;
-use crate::main_menu::components::*;
-use crate::main_menu::styles::*;
+use crate::game::ui::main_menu::components::*;
+use crate::game::ui::main_menu::styles::{ui_get_rounded_rect_param, UI_MAIN_MENU_BG_COL};
+use crate::game::ui::hud::styles::*;
+use crate::global_systems::*;
 
 pub fn spawn_main_menu(
     mut commands: Commands,
@@ -26,7 +28,7 @@ pub fn build_main_menu(
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
     let main_menu_entity = commands.spawn(
         (
-            // Style lives now in Node
+            MainMenu {},
             Node { 
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
@@ -35,32 +37,31 @@ pub fn build_main_menu(
                 align_items: AlignItems::Center,
                 row_gap: Val::Px(8.0),
                 column_gap: Val::Px(8.0),
-                ..default() },
-            MainMenu {})
+                ..default()
+            },
+        )
     )
     .insert(BackgroundColor(UI_MAIN_MENU_BG_COL))
     .id();
     
-    //
     // children nodes
+    
     //
-
     // gameinfo widget
     //
-    // have to figure out, how to spawn meshes and gizmos or other elements
-    //
-    // ****** not finished ******
-    //
     commands.spawn((
+        GameInfoWidget{},
         Node {
             width: Val::Px(420.0),
             height: Val::Px(120.0),
             justify_content: JustifyContent::Center,
             flex_direction: FlexDirection::Row,
             align_items: AlignItems::Center,
+            padding: UiRect::all(Val::Px(6.0)),
+            border: UiRect::all(Val::Px(2.0)),
             ..default()
         },
-        GameInfoWidget{}
+        ui_get_rounded_rect_param(),
         )
     )
     .insert(ChildOf(main_menu_entity))
@@ -68,11 +69,17 @@ pub fn build_main_menu(
     .with_children(
         |parent| {
             // ### image part
-            //
-            // use UiImage or plain Node here
+            
+            // use UiImage or plain Node here later
 
             // ### text part
             parent.spawn((
+                Node {
+                    padding: UiRect::all(Val::Px(6.0)),
+                    border: UiRect::all(Val::Px(2.0)),
+                    ..default()
+                },
+                ui_get_rounded_rect_param(),
                 TextFont {
                     font: font.clone(),
                     font_size: 40.0,
@@ -81,33 +88,32 @@ pub fn build_main_menu(
                 Text::new("_ Basic gamE"),
                 TextColor::from(UI_FONT_COL),
             ));
-
             // ## image 2 part 
             parent.spawn(
-                Node {
+        (Node {
                     width: Val::Px(200.0),
                     height: Val::Px(80.0),
+                    padding: UiRect::all(Val::Px(6.0)),
+                    border: UiRect::all(Val::Px(2.0)),
                     ..default()
-                }
+                },
+                ui_get_rounded_rect_param(),
+                )
             )
-            .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
             ;
         }
     );
-    //
-    // ****** not finished ******
-    //
     
     //
     // button play
     //
     commands.spawn((
-        ui_create_basic_button_node(),
         PlayButton,
+        ui_create_rounded_rect_button_node(),
+        ui_get_rounded_rect_param(),
         // have to set the interaction manually, cause there is no default set?
         Interaction::default(),
         ))
-        .insert(BackgroundColor(UI_PLAY_BUTTON_BG_COL))
         .insert(ChildOf(main_menu_entity))
         // debug:
         //
@@ -126,14 +132,16 @@ pub fn build_main_menu(
                     TextColor::from(UI_FONT_COL),
                     ));
             });
-
+    
+    //
     // button quit app
+    //
     commands.spawn((
-        ui_create_basic_button_node(),
         QuitButton,
+        ui_create_rounded_rect_button_node(),
+        ui_get_rounded_rect_param(),
         Interaction::default(),
         ))
-        .insert(BackgroundColor(UI_QUIT_BUTTON_BG_COL))
         .insert(ChildOf(main_menu_entity))
         .with_children(
         |parent| {
