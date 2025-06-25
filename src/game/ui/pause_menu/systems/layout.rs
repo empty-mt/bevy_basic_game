@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
-use crate::global_systems::ui_create_basic_button_node;
 use crate::game::ui::pause_menu::components::*;
 use crate::game::ui::pause_menu::styles::*;
+use crate::game::ui::main_menu::styles::*;
+use crate::global_systems::ui_create_rounded_rect_button_node;
 
 pub fn spawn_pause_menu(
     mut commands: Commands,
@@ -56,8 +57,9 @@ pub fn build_pause_menu(
     // make fn button_gen(), if more buttons are needed
     //
     commands.spawn((
-        ui_create_basic_button_node(),
         ResumeButton,
+        ui_create_rounded_rect_button_node(),
+        ui_get_rounded_rect_param(),
         // have to set the interaction manually, cause there is no default set?
         Interaction::default(),
         ))
@@ -78,8 +80,9 @@ pub fn build_pause_menu(
 
     // button quit app
     commands.spawn((
-        ui_create_basic_button_node(),
         MainMenuButton,
+        ui_create_rounded_rect_button_node(),
+        ui_get_rounded_rect_param(),
         Interaction::default(),
         ))
         .insert(BackgroundColor(UI_QUIT_BUTTON_BG_COL))

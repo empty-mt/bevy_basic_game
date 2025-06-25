@@ -22,6 +22,7 @@ impl Plugin for GamePlugin {
         app
         .insert_state(SimulationState::default())
         .add_event::<GameOver>()
+        .add_event::<LevelUp>()
         .add_plugins((            
             UiPlugin,
             PlayerPlugin,

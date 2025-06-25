@@ -52,14 +52,15 @@ pub fn handle_game_over(
     mut next_state: ResMut<NextState<AppState>>,
 ) {
     for _event in game_over_event_r.read() {
-        // println!("reached goal of {:?} kills.", event.score.to_string());
-        
         next_state.set(AppState::GameOver);
     }
 }
 
+//
+// pause game
+//
+
 pub fn transition_to_game_state(
-    // mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
@@ -72,7 +73,6 @@ pub fn transition_to_game_state(
 }
 
 pub fn transition_to_main_menu_state(
-    // mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
@@ -110,22 +110,10 @@ pub fn force_enemy_despawn(
         }
     }
 }
+
 //
 // UI stuff
 //
-
-// styles
-
-pub fn ui_create_basic_button_node() -> Node {
-    Node {
-        width: Val::Px(200.0),
-        height: Val::Px(80.0),
-        justify_content: JustifyContent::Center,
-        flex_direction: FlexDirection::Column,
-        align_items: AlignItems::Center,
-        ..default()
-    }
-}
 
 pub fn ui_create_rounded_rect_button_node() -> Node {
     Node {

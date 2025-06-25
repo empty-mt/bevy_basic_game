@@ -26,150 +26,151 @@ pub fn build_hud(
     asset_server: &Res<AssetServer>,
 ) -> Entity {
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
-    let image = asset_server.load("sprites/tile_0005.png");
+    let image_enemy = asset_server.load("sprites/target_round_b.png");
+    let image_time = asset_server.load("sprites/busy_hourglass_outline_detail.png");
+    let image_level = asset_server.load("sprites/door.png");
     
-    let hud_entity = commands.spawn(
+    let hud = commands.spawn(
         (
-            //
-            // ### hud parent
-            //
-            // component
-            //
             Hud,
-            //
-            // main node
-            //
-            Node { 
-                width: Val::Percent(100.0),
-                height: Val::Percent(5.0),
-                border: UiRect::all(Val::Px(2.0)),
+            Node {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Row,
-                justify_content: JustifyContent::FlexStart,
-                align_content: AlignContent::FlexStart,
+                justify_content: JustifyContent::SpaceBetween,
                 align_items: AlignItems::Center,
-                justify_items: JustifyItems::Start,
-                position_type: PositionType::Absolute,
-                padding: UiRect::all(Val::Px(6.0)),
-                row_gap: Val::Px(1.0),
-                column_gap: Val::Px(1.0),
-                ..default() 
+                width: Val::Percent(100.0), 
+                height: Val::Percent(5.0),
+                ..default()
             },
-            //
-            // additional style bundle
-            //
-            (
-                BackgroundColor(HUD_BG_COL.into()),
-                BorderColor(HUD_BORDER_COL.into()),
-                BorderRadius::all(Val::Px(10.0)),
-                // TextLayout::default(),
-            ),
-            //
-            // children nodes
-            //
             children![
-
-                // ### enemy image
-                //
-                // child node
-                //
-                (Node {
-                    width: Val::Percent(2.0),
-                    height: Val::Percent(95.0),
-                    border: UiRect::all(Val::Px(1.0)),
-                    display: Display::Flex,
-                    align_content: AlignContent::Center,
-                    justify_content: JustifyContent::Center,
-                    flex_direction: FlexDirection::Row,
-                    align_items: AlignItems::Center,
-                    ..default()
-                },
-                //
-                // additional style bundle
-                //
                 (
-                    BorderColor(HUD_BORDER_COL.into()),
-                    BorderRadius::all(Val::Px(10.0))
-                ),
-                //
-                // child of child
-                //
-                children![
+                    HudLeft,
+                    ui_get_hud_part_style_node(),
                     (
-                    ImageNode {
-                        image: image,
-                        ..default()
-                    },
-                    EnemyImage,
-                    )
-                ]),
+                        BackgroundColor(HUD_BG_COL.into()),
+                    ),
+                    children![
+                        // enemy image
+                        (
+                        ui_get_image_style_node(),
+                        (
+                            BorderColor(HUD_BORDER_COL.into()),
+                            BorderRadius::all(Val::Px(10.0))
+                        ),
+                        children![
+                            (
+                            EnemyImage,
+                            ImageNode {
+                                image: image_enemy,
+                                ..default()
+                            },
+                            )
+                        ]),
 
-                // ### score display
-                //
-                // component
-                //
-                ScoreDisplay,
-                //
-                // child node
-                //
-                (Node { 
-                    width: Val::Percent(3.0),
-                    height: Val::Percent(95.0),
-                    border: UiRect::all(Val::Px(1.0)),
-                    justify_content: JustifyContent::Center,
-                    flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::Center,
-                    display: Display::Flex,
-                    row_gap: Val::Px(8.0),
-                    column_gap: Val::Px(8.0),
-                    ..default() 
-                },
-                //
-                // additional style bundle
-                //
+                        // score display
+                        ScoreDisplay,
+                        (
+                        ui_get_text_style_node(),
+                        (
+                            BorderColor(HUD_BORDER_COL.into()),
+                            BorderRadius::all(Val::Px(10.0)),
+                            TextLayout::default(),
+                            ComputedTextBlock::default(),
+                        ),
+                        children![
+                            ( // <--- ! fml .../(*.*/)
+                            ScoreText,
+                            ui_get_text_style("0".to_string(), UI_FONT_COL, &font),
+                            ) // <--- !
+                            ]
+                        ),
+                    ],
+                ),
                 (
-                    BorderColor(HUD_BORDER_COL.into()),
-                    BorderRadius::all(Val::Px(10.0)),
-                    TextLayout::default(),
-                    ComputedTextBlock::default(),
-                    // 
-                    //
-                    // Text::new("XXXXX"),
-                    // TextFont {
-                    //     font: font.clone(),
-                    //     font_size: 25.0,
-                    //     ..Default::default()
-                    // },
-                    // TextColor::from(UI_FONT_COL),
-                    //
-                    //
-
+                    HudMiddle,
+                    ui_get_hud_part_style_node(),
+                    (
+                        BackgroundColor(HUD_BG_COL.into()),
+                    ),
+                    children![
+                        // level image
+                        (
+                        ui_get_image_style_node(),
+                        (
+                            BorderColor(HUD_BORDER_COL.into()),
+                            BorderRadius::all(Val::Px(10.0))
+                        ),
+                        children![
+                            (
+                            LevelImage,
+                            ImageNode {
+                                image: image_level,
+                                ..default()
+                            },
+                            )
+                        ]),
+                        // level display
+                        (
+                        ui_get_text_style_node(),
+                        (
+                            BorderColor(HUD_BORDER_COL.into()),
+                            BorderRadius::all(Val::Px(10.0)),
+                            TextLayout::default(),
+                            ComputedTextBlock::default(),
+                        ),
+                        children![
+                            ( // <--- ! fml .../(*.*/)
+                            LevelText,
+                            ui_get_text_style("1".to_string(), UI_FONT_COL, &font),
+                            ) // <--- !
+                            ]
+                        ),
+                    ],
                 ),
-                children![
-                    ( // <--- ! fml .../(*.*/)
-
-                    ScoreText,
-                    Text::new("X"),
-                    TextFont {
-                        font: font.clone(),
-                        font_size: 25.0,
-                        ..Default::default()
-                    },
-                    TextColor::from(UI_FONT_COL),
-                    // With Text2d the justify field of TextLayout only affects the internal alignment of a block of text and not its relative position, 
-                    // which is controlled by the Anchor component
-                    // Text2d::new("X"),
-                    
-                    // Node::default(),
-                    // Text::from("X"),
-                    // TextSpan::from("X"),
-
-                    ) // <--- !
-                    ]
-                ),
+                (
+                    HudRight,
+                    ui_get_hud_part_style_node(),
+                    (
+                        BackgroundColor(HUD_BG_COL.into()),
+                    ),
+                    children![
+                        // time image
+                        (
+                        ui_get_image_style_node(),
+                        (
+                            BorderColor(HUD_BORDER_COL.into()),
+                            BorderRadius::all(Val::Px(10.0))
+                        ),
+                        children![
+                            (
+                            TimeImage,
+                            ImageNode {
+                                image: image_time,
+                                ..default()
+                            },
+                            )
+                        ]),
+                        // time display
+                        (
+                        ui_get_text_style_node(),
+                        (
+                            BorderColor(HUD_BORDER_COL.into()),
+                            BorderRadius::all(Val::Px(10.0)),
+                            TextLayout::default(),
+                            ComputedTextBlock::default(),
+                        ),
+                        children![
+                            ( // <--- ! fml .../(*.*/)
+                            TimeText,
+                            ui_get_text_style("20".to_string(), UI_FONT_COL, &font),
+                            ) // <--- !
+                            ]
+                        ),
+                    ],
+                )
             ],
         )
     )
     .id();
-    hud_entity
+    hud
 }

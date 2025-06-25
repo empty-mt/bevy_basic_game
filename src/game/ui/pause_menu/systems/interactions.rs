@@ -61,7 +61,7 @@ pub fn interact_with_button(
                 }
                 Interaction::None => {
                     // } else if button_quit_query.get(entity).is_ok() {
-                        *bg_color = UI_QUIT_BUTTON_BG_COL.into();
+                        *bg_color = UI_QUIT_BUTTON_BG_COL_2.into();
                 }
             }
         }

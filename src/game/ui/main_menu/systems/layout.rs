@@ -39,9 +39,13 @@ pub fn build_main_menu(
                 column_gap: Val::Px(8.0),
                 ..default()
             },
+            ImageNode {
+              image: asset_server.load("sprites/alienYellow_square.png"),
+                ..default()
+            },
         )
     )
-    .insert(BackgroundColor(UI_MAIN_MENU_BG_COL))
+    // .insert(BackgroundColor(UI_MAIN_MENU_BG_COL))
     .id();
     
     // children nodes

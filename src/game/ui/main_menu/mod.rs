@@ -1,4 +1,4 @@
-mod styles;
+pub mod styles;
 mod systems;
 mod components;
 
