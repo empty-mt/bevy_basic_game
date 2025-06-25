@@ -52,7 +52,7 @@ pub fn handle_game_over(
     mut next_state: ResMut<NextState<AppState>>,
 ) {
     for event in game_over_event_r.read() {
-        println!("reached goal of {:?} kills.", event.score.to_string());
+        // println!("reached goal of {:?} kills.", event.score.to_string());
         
         next_state.set(AppState::GameOver);
     }

@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-
 use crate::global_systems::ui_create_basic_button_node;
 use crate::game::ui::pause_menu::components::*;
 use crate::game::ui::pause_menu::styles::*;
@@ -40,8 +39,10 @@ pub fn build_pause_menu(
                 column_gap: Val::Px(8.0),
                 // make space for hud
                 bottom: Val::Percent(-5.0),
-                ..default() },
-            PauseMenu {})
+                ..default() 
+            },
+            PauseMenu {},
+        )
     )
     .insert(BackgroundColor(UI_PAUSE_MENU_BG_COL))
     .id();

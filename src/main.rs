@@ -28,7 +28,6 @@ impl Plugin for CustomPlugin {
         app
         .add_plugins(DefaultPlugins)
         .insert_state(AppState::default())
-        // .insert_state::<AppState>()
         .add_plugins((
             MainMenuPlugin,
             GamePlugin,

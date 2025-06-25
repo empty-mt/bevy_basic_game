@@ -49,7 +49,7 @@ pub fn interact_with_button(
             }
         }
         else if let Some(_) = quit_b {
-                    match *interaction {
+            match *interaction {
                 Interaction::Hovered => {
                     *bg_color = UI_HOVERED_BUTTON.into();
                 }
