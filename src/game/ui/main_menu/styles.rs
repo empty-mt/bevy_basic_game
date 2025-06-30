@@ -7,6 +7,16 @@ pub const UI_QUIT_BUTTON_BG_COL: Color = Color::linear_rgb(0.15, 0.05, 0.0);
 // pub const UI_FONT_COL: Color = Color::linear_rgb(0.2, 0.45, 0.45);
 pub const UI_HOVERED_BUTTON: Srgba = LIGHT_GREY;
 pub const UI_PRESSED_BUTTON: Srgba = LIGHT_BLUE;
+pub const BORDER_OFFSETS: [Vec2; 8] = [
+    Vec2::new(-2.0, 0.0),
+    Vec2::new(2.0, 0.0),
+    Vec2::new(0.0, -2.0),
+    Vec2::new(0.0, 2.0),
+    Vec2::new(-2.0, -2.0),
+    Vec2::new(-2.0, 2.0),
+    Vec2::new(2.0, -2.0),
+    Vec2::new(2.0, 2.0),
+];
 
 pub fn ui_get_rounded_rect_param() -> (bevy::prelude::BorderColor, bevy::prelude::BackgroundColor, bevy::prelude::BorderRadius) {
     (

@@ -23,6 +23,7 @@ impl Plugin for GamePlugin {
         .insert_state(SimulationState::default())
         .add_event::<GameOver>()
         .add_event::<LevelUp>()
+        .add_event::<HudTimeUpdate>()
         .add_plugins((            
             UiPlugin,
             PlayerPlugin,

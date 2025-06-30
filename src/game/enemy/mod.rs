@@ -51,7 +51,7 @@ impl Plugin for EnemyPlugin {
             .run_if(in_state(SimulationState::Running))
             .chain())
         
-        // has to run on update, if we did not despawn in a loop
+        // has to run on update, if we do not despawn in a loop
         // .add_systems(Update, despawn_enemies.run_if(not(in_state(AppState::Game))))
         .add_systems(OnExit(AppState::Game), despawn_enemies)
         ;

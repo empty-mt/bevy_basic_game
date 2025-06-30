@@ -162,7 +162,7 @@ pub fn build_hud(
                         children![
                             ( // <--- ! fml .../(*.*/)
                             TimeText,
-                            ui_get_text_style("20".to_string(), UI_FONT_COL, &font),
+                            ui_get_text_style("0".to_string(), UI_FONT_COL, &font),
                             ) // <--- !
                             ]
                         ),

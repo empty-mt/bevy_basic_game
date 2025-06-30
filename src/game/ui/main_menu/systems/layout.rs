@@ -1,6 +1,7 @@
 use bevy::prelude::*;
+use bevy::text::cosmic_text::ttf_parser::RgbaColor;
 use crate::game::ui::main_menu::components::*;
-use crate::game::ui::main_menu::styles::{ui_get_rounded_rect_param, UI_MAIN_MENU_BG_COL};
+use crate::game::ui::main_menu::styles::*;
 use crate::game::ui::hud::styles::*;
 use crate::global_systems::*;
 
@@ -35,82 +36,125 @@ pub fn build_main_menu(
                 justify_content: JustifyContent::Center,
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
+                // position_type: PositionType::Absolute,
                 row_gap: Val::Px(8.0),
                 column_gap: Val::Px(8.0),
                 ..default()
             },
+            // background main menu
             ImageNode {
-              image: asset_server.load("sprites/alienYellow_square.png"),
+                image: asset_server.load("sprites/alienYellow_square.png"),
+                image_mode: NodeImageMode::Tiled { tile_x: true, tile_y: true, stretch_value: 1.0 },
                 ..default()
             },
         )
     )
-    // .insert(BackgroundColor(UI_MAIN_MENU_BG_COL))
     .id();
-    
+
     // children nodes
-    
-    //
+        
     // gameinfo widget
-    //
     commands.spawn((
-        GameInfoWidget{},
-        Node {
-            width: Val::Px(420.0),
-            height: Val::Px(120.0),
+        Node { 
+            width: Val::Px(200.0),
+            height: Val::Px(80.0),
             justify_content: JustifyContent::Center,
-            flex_direction: FlexDirection::Row,
+            flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
-            padding: UiRect::all(Val::Px(6.0)),
-            border: UiRect::all(Val::Px(2.0)),
+            position_type: PositionType::Relative,
+            padding: UiRect::all(Val::Px(8.0)),           
+            border: UiRect::all(Val::Px(4.0)),            
+            
             ..default()
         },
         ui_get_rounded_rect_param(),
-        )
-    )
-    .insert(ChildOf(main_menu_entity))
-    .insert(Visibility::default())
-    .with_children(
-        |parent| {
-            // ### image part
-            
-            // use UiImage or plain Node here later
 
-            // ### text part
-            parent.spawn((
-                Node {
-                    padding: UiRect::all(Val::Px(6.0)),
-                    border: UiRect::all(Val::Px(2.0)),
+    ))
+    .with_children(|parent| {
+        // border
+        for offset in BORDER_OFFSETS.iter() {
+            parent.spawn(
+        (Node {
+                    position_type: PositionType::Absolute,
+                    align_self: AlignSelf::Center,
+                    align_items: AlignItems::Center,
+                    justify_self: JustifySelf::Center,
+
+                    // left: Val::Px(offset.x+50.0),
+                    // top: Val::Px(offset.y+20.0),
+
+                    // left: Val::Percent(50.0),
+                    // top: Val::Percent(50.0),
+                    // margin: UiRect {
+                    //     left: Val::Px(offset.x - 40.0 / 2.0),
+                    //     top: Val::Px(offset.y - 40.0 / 2.0),
+                    //     ..default()
+                    // },
+
+                    left: Val::Px(offset.x),
+                    right: Val::Px(-offset.x),
+                    top: Val::Px(offset.y),
+                    bottom: Val::Px(-offset.y),
+
                     ..default()
                 },
-                ui_get_rounded_rect_param(),
+                // Transform {
+                //     translation: Vec3::new((offset.x - 40.0 / 2.0), (offset.y - 40.0 / 2.0), 0.0),
+                //     ..default()
+                // },
                 TextFont {
                     font: font.clone(),
                     font_size: 40.0,
-                    ..Default::default()
-                },
-                Text::new("_ Basic gamE"),
-                TextColor::from(UI_FONT_COL),
-            ));
-            // ## image 2 part 
-            parent.spawn(
-        (Node {
-                    width: Val::Px(200.0),
-                    height: Val::Px(80.0),
-                    padding: UiRect::all(Val::Px(6.0)),
-                    border: UiRect::all(Val::Px(2.0)),
                     ..default()
                 },
-                ui_get_rounded_rect_param(),
-                )
-            )
-            ;
+                Text::new("get em"),
+                TextColor::from(HUD_BORDER_COL),
+                // BorderColor(HUD_BORDER_COL.into()),
+                // BackgroundColor(HUD_BG_COL.into()),
+                // ..default()
+            ));
         }
-    );
+        // title
+        parent.spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                align_items: AlignItems::Center,
+
+                // left: Val::Px(0.0+50.0),
+                // top: Val::Px(0.0+20.0),
+
+                // left: Val::Percent(50.0),
+                // top: Val::Percent(50.0),
+                // margin: UiRect {
+                //     left: Val::Px( - 40.0 / 2.0),
+                //     top: Val::Px( - 40.0 / 2.0),
+                //     ..default()
+                // },
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+                justify_self: JustifySelf::Center,
+                align_self: AlignSelf::Center,
+                ..default()
+            },
+            // Transform {
+            //     translation: Vec3::new((-40.0 / 2.0), (-40.0 / 2.0), 0.0),
+            //     ..default()
+            // },
+            TextFont {
+                font: font.clone(),
+                font_size: 40.0,
+                ..Default::default()
+            },
+            Text::new("get em"),
+            TextColor::from(UI_FONT_COL),
+        ));
+    })
+    .insert(ChildOf(main_menu_entity))
+    ;
     
-    //
     // button play
-    //
     commands.spawn((
         PlayButton,
         ui_create_rounded_rect_button_node(),
@@ -135,11 +179,9 @@ pub fn build_main_menu(
                     Text::new("_ play"),
                     TextColor::from(UI_FONT_COL),
                     ));
-            });
+        });
     
-    //
     // button quit app
-    //
     commands.spawn((
         QuitButton,
         ui_create_rounded_rect_button_node(),

@@ -9,3 +9,6 @@ pub struct GameOver {
 
 #[derive(Event)]
 pub struct LevelUp;
+
+#[derive(Event)]
+pub struct HudTimeUpdate;

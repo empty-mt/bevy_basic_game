@@ -1,7 +1,8 @@
-use bevy::{color::palettes::css::{DARK_GREY, LIGHT_GREY}, prelude::*};
+use bevy::{color::palettes::css::{BLACK, DARK_GREY, LIGHT_GREY, WHITE}, prelude::*};
 
 pub const HUD_BG_COL: Srgba = LIGHT_GREY;
-pub const HUD_BORDER_COL: Srgba = DARK_GREY;
+// pub const HUD_BG_COL: Srgba = LIGHT_GREY;
+pub const HUD_BORDER_COL: Srgba = WHITE;
 pub const UI_FONT_COL: Color = Color::linear_rgb(0.2, 0.45, 0.45);
 
 pub fn ui_get_text_style(text: String, text_color: Color, font: &Handle<Font>) -> (bevy::ui::widget::Text, TextFont, TextColor) {

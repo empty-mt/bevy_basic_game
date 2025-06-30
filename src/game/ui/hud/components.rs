@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+// sections
 #[derive(Component)]
 pub struct Hud;
 #[derive(Component)]
@@ -10,6 +11,7 @@ pub struct HudRight;
 pub struct HudMiddle;
 
 
+// items
 #[derive(Component, Debug)]
 pub struct ScoreDisplay;
 #[derive(Component, Debug)]
@@ -18,12 +20,9 @@ pub struct ScoreText;
 pub struct LevelText;
 #[derive(Component, Debug)]
 pub struct TimeText;
-
 #[derive(Component)]
 pub struct EnemyImage;
-
 #[derive(Component)]
 pub struct LevelImage;
-
 #[derive(Component)]
 pub struct TimeImage;
