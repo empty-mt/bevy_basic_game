@@ -54,3 +54,17 @@ pub fn handle_level_up(
         next_state.set(AppState::LevelUpMenu);
     }
 }
+
+// test 
+pub fn send_max_score_event_2(
+    score_query: ResMut<Score>,
+    mut level_up_event: EventWriter<LevelUp>,
+    mut next_state: ResMut<NextState<AppState>>,
+
+) {
+    if score_query.value >= SCORE_MAX {
+        level_up_event.write(LevelUp);
+        next_state.set(AppState::LevelUpMenu);
+
+    }
+}

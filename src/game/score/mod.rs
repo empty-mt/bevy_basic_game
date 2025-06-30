@@ -21,8 +21,12 @@ impl Plugin for ScorePlugin {
         .init_resource::<Score>() 
         // .add_systems(Startup, insert_score)
         .add_systems(OnEnter(AppState::Game), insert_score)
-        .add_systems(Update, send_max_score_event.run_if(in_state(AppState::Game)))
-        .add_systems(Update, handle_level_up.run_if(on_event::<LevelUp>))
+        // test
+        // .add_systems(Update, send_max_score_event.run_if(in_state(AppState::Game)))
+        // .add_systems(Update, handle_level_up.run_if(on_event::<LevelUp>))
+        //
+        .add_systems(Update, send_max_score_event_2.run_if(in_state(AppState::Game)))
+        //
 
         // .add_systems(Update, print_score.run_if(in_state(AppState::Game)))
         // one time rm -> one score

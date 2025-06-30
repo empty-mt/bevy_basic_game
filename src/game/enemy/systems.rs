@@ -178,7 +178,12 @@ pub fn spawn_enemies_over_time(
     // println!("a");
     if spawn_timer.timer.finished() {
     // println!("b");
-        
+        // match (window_query.single(), hud_query.single())  {
+        //     (Ok(a), Ok(b)) => { println!("{:?} ||| {:?}", a.width(), b.height)},
+        //     (Ok(a), Err(b)) => { println!("{:?} ||| {:?}", a.width(), b)},
+        //     (Err(a), Ok(b)) => { println!("{:?} ||| {:?}", a, b.height)},
+        //     (Err(a), Err(b)) => { println!("{:?} ||| {:?}", a, b)},
+        // };
         if let (Ok(window), Ok(hud_node)) = (window_query.single(), hud_query.single()) {
     // println!("c");
 

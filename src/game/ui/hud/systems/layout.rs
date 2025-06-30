@@ -10,6 +10,7 @@ pub fn spawn_hud(
     asset_server: Res<AssetServer>,
 ) {
     // let hud_entity: Entity =
+    println!("Spawning HUD!");
     build_hud(&mut commands, &asset_server);
 }
 
@@ -19,6 +20,7 @@ pub fn despawn_hud(
 ) {
     if let Ok(hud_entity) = hud_query.single() {
         commands.entity(hud_entity).despawn();
+        println!("Despawning HUD!");
     }
 }
 pub fn build_hud(
