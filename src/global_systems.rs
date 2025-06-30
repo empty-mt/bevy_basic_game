@@ -99,6 +99,14 @@ pub fn print_appstate(
     }
 }
 
+pub fn print_simulationstate(
+    mut events: EventReader<StateTransitionEvent<SimulationState>>,
+) {
+    for event in events.read() {
+        println!("{:?}", event);
+    }
+}
+
 pub fn force_enemy_despawn(
     mut commands: Commands,
     enemy_query: Query<Entity, With<Enemy>>,

@@ -39,4 +39,5 @@ pub enum AppState {
     MainMenu,
     Game,
     GameOver,
+    LevelUpMenu,
 }

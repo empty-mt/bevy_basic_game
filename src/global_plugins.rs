@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy::audio::Volume;
 
 use super::global_systems::*;
+use crate::game::SimulationState;
 use crate::AppState;
 
 pub struct GlobalPlugin;
@@ -15,6 +16,7 @@ impl Plugin for GlobalPlugin {
         .add_systems(Startup, max_window)
         .add_systems(Startup, change_global_volume)
         // debug
+        .add_systems(Update, print_simulationstate.run_if(state_changed::<SimulationState>))
         .add_systems(Update, print_appstate.run_if(state_changed::<AppState>))
         .add_systems(Update, force_enemy_despawn.run_if(in_state(AppState::Game)))
         //

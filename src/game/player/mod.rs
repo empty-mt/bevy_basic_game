@@ -8,11 +8,9 @@ use systems::*;
 use crate::{game::SimulationState, AppState};
 
 use super::super::sys_sets::*;
-// use resources::*;
 
 pub const PLAYER_SIZE: f32 = 64.0;      // player sprite size
 pub const PLAYER_SPEED: f32 = 500.0;
-pub const SCORE_MAX: i32 = 10;
 
 
 pub struct PlayerPlugin;
