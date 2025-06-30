@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::text::cosmic_text::ttf_parser::RgbaColor;
 use crate::game::ui::main_menu::components::*;
 use crate::game::ui::main_menu::styles::*;
 use crate::game::ui::hud::styles::*;

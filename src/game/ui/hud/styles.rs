@@ -1,4 +1,4 @@
-use bevy::{color::palettes::css::{BLACK, DARK_GREY, LIGHT_GREY, WHITE}, prelude::*};
+use bevy::{color::palettes::css::{LIGHT_GREY, WHITE}, prelude::*};
 
 pub const HUD_BG_COL: Srgba = LIGHT_GREY;
 // pub const HUD_BG_COL: Srgba = LIGHT_GREY;

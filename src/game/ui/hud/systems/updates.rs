@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use::bevy::prelude::*;
 use bevy::reflect::DynamicTyped;
 
@@ -20,15 +18,31 @@ pub fn update_hud_time(
     mut t_query: Query<&mut Text, With<TimeText>>,
     tick_timer: ResMut<HudTimer>,
 ){
-    // println!("time: {:?}", tick_timer.timer.elapsed().as_secs().to_string());
     for mut text in &mut t_query {
         text.0 = tick_timer.timer.elapsed().as_secs().to_string();
-        println!("text: {:?}", text.0);
     }
-
 }
 
+pub fn reset_hud_timer(
+    mut hud_timer: ResMut<HudTimer>, 
+) {
+    hud_timer.timer.reset();
+}
+
+pub fn unpause_hud_timer(
+    mut hud_timer: ResMut<HudTimer>,
+){
+    hud_timer.timer.unpause();
+}
+
+pub fn pause_hud_timer(
+    mut hud_timer: ResMut<HudTimer>,
+){
+    hud_timer.timer.pause();
+}
 // tick every time.delta()
+// and
+// send event every elapsed second
 pub fn tick_hud_timer(
     mut hud_timer: ResMut<HudTimer>, 
     time: Res<Time>,
@@ -39,11 +53,9 @@ pub fn tick_hud_timer(
     hud_timer.timer.tick(time.delta());
     let after = hud_timer.timer.elapsed_secs() as u32;
 
-    // send event every elapsed second
     if after > before {
         // event to hud update
         event_w.write(HudTimeUpdate);
-        println!("1");
     } 
 }
 
